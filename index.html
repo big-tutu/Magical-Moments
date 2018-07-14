@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Magical Moments</title>
+  <script>
+
+  var b = parseInt(window.screen.width),
+    c = b / 750;
+  if (/Android (\d+\.\d+)/.test(navigator.userAgent)) {
+    var d = parseFloat(RegExp.$1);
+    document.write(d > 2 ? '<meta name="viewport" content="width=750, user-scalable=no,maximum-scale = 1">' : '<meta name="viewport" content="width=750, target-densitydpi=device-dpi">');
+  } else document.write('<meta name="viewport" content="width=750, user-scalable=no,minimum-scale = ' + c + ',maximum-scale = 1,target-densitydpi=device-dpi">');
+
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="btn-group">
+      <ul>
+        <li class="btn-home">1</li>
+        <li class="btn-upload">2</li>
+        <li class="btn-rank">3</li>
+        <li class="btn-rules">4</li>
+      </ul>
+    </div>
+    <div id="page-home" class="page-home page active">
+      <div id="masonry" class="masonry scroller preview">
+        <div class="item item-3 masonry-brick" data-id="3" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/test.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-1 masonry-brick" data-id="1" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/default_lecture.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-2 masonry-brick" data-id="2" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/default_lecture.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-3 masonry-brick" data-id="3" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/test.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-2 masonry-brick" data-id="2" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/default_lecture.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-3 masonry-brick" data-id="3" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/test.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-3 masonry-brick" data-id="3" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/test.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-4 masonry-brick" data-id="4" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/timg.jpg">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-3 masonry-brick" data-id="3" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/test.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-5 masonry-brick" data-id="5" data-src="upload/2018071118523229127.jpg">
+          <img src="./imgs/testSize.png">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+        <div class="item item-243 masonry-brick" data-id="243" data-src="upload/2018071118523229127.jpg" style="position: absolute; top: 10px; left: 320px;">
+          <img src="./imgs/WechatIMG6.jpeg">
+          <span class="btnLike">
+            <i class="ico-like"></i>
+            <b>1</b>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-rank" class="leaderboard-page page">leaderboard-page</div>
+    <div id="page-rules" class="page-rules page">
+      <div class="rules-content">
+        <p>1</p>
+        <p>2</p>
+        <p>3</p>
+        <p>4</p>
+        <p>5</p>
+        <p>6</p>
+        <p>7</p>
+        <p>8</p>
+        <p>9</p>
+        <p>10</p>
+      </div>
+    </div>
+    <div class="hide">
+      <input type="file" id="filedata" name="filedata" accept="image/*" />
+    </div>
+  </div>
+  <script type="text/javascript" src="./js/zepto.min.js"></script>
+  <script type="text/javascript" src="./js/mobileBUGFix.mini.js"></script>
+  <script type="text/javascript" src="./js/jquery.min.js"></script>
+  <script type="text/javascript" src="./js/upload.js"></script>
+  <script type="text/javascript" src="./js/jquery.masonry.min.js"></script>
+</body>
+</html>
