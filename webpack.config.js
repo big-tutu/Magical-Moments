@@ -51,11 +51,31 @@ module.exports = {
         // 在开发环境使用 style-loader
         fallback: "style-loader"
       })
-    }]
+    },
+    {
+      test: /\.(png|jpg|gif|jpeg)/,
+      use: [
+        {
+          loader: 'file-loader',
+          options: {
+            outputPath: "imgs/"
+          }
+        }
+      ]
+    },
+    {
+      test: /\.(eot|svg|ttf|woff)\??.*/,
+      use: {
+        loader: 'url-loader?name=fonts[name].[md5:hash:hex:7].[ext]'
+      }
+    }
+    
+    ]
   },
   devServer: {
     contentBase: './dist',
     host: '192.168.1.100',
+    // host: '192.168.123.70',
     hot: true
   },
 };
