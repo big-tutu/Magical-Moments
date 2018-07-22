@@ -5,26 +5,54 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const webpack = require('webpack');
 
-const extractSass = new ExtractTextPlugin({
-  filename: "css/styles.css",
-  // disable: process.env.NODE_ENV === "development"
-});
+const extractSass = new ExtractTextPlugin("css/[name].css"); // cssc处理
+// const adminSass = new ExtractTextPlugin({
+//   filename: 'css/admin.css'
+// })
+// const extractSass = new ExtractTextPlugin({
+//   filename: "css/styles.css",
+//   // disable: process.env.NODE_ENV === "development"
+// });
 
 module.exports = {
-  entry: './src/index.js',
+  // entry: './src/index.js',
+  entry: {  // 多入口
+    index: './src/js/index.js',
+    admin: './src/js/admin.js'
+  },
   output: {
-    filename: 'js/bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: __dirname + "/dist/",
+    filename: 'js/[name].js',
   },
   devtool: 'inline-source-map',
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
       title: 'Nike',
+      filename: 'index.html',
       inject: true,
       hash: true,
-      template: './index.html'
+      template: './index.html',
+      chunks: ['index']
     }),
+    new HtmlWebpackPlugin({
+      title: 'Login',
+      inject: true,
+      filename: 'login.html',
+      hash: true,
+      template: './login.html',
+      chunks: ['admin']
+    }),
+    new HtmlWebpackPlugin({
+      title: 'Admin',
+      inject: true,
+      filename: 'list.html',
+      hash: true,
+      template: './list.html',
+      chunks: ['admin']  // 指定需要引入的js
+    }),
+
+
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
@@ -37,7 +65,8 @@ module.exports = {
         to: __dirname + '/dist/imgs'
       }
     ]),
-    extractSass
+    extractSass,
+    // adminSass
   ],
   module: {
     rules: [{
