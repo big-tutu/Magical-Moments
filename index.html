@@ -40,15 +40,43 @@
     <!-- 首页 -->
     <div id="page-home" class="page-home page active">
       <div id="masonry" class="masonry scroller preview">
+          <!-- 视频数据 -->
+          <div class="item masonry-brick video" data-video="http://vjs.zencdn.net/v/oceans.mp4" data-id="38" data-src="imgs/test.png">
+            <video controls src="http://vjs.zencdn.net/v/oceans.mp4" x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
+            <div class="poster">
+              <img src="imgs/test.png">
+              <i class="iconfont icon-play"></i>
+            </div>
+            <!-- <img src="imgs/test.png"> -->
+            <div class="pick-info">
+              <i class="type iconfont icon-shipinx"></i>
+              <span class="btnLike">
+                <i class="iconfont icon-dianzanx"></i>
+                <b>332</b>
+              </span>
+            </div>
+          </div>
+          
+          
+          <!-- 图片数据 -->
+          <div class="item masonry-brick" data-id="100" data-src="imgs/default_lecture.png">
+            <img src="imgs/default_lecture.png">
+            <div class="pick-info">
+              <i class="type iconfont icon-tupianx"></i>
+              <span class="btnLike">
+                <i class="iconfont icon-dianzanx"></i>
+                <b>1232332</b>
+              </span>
+            </div>
+          </div>
+      </div>
+    </div>
 
-
-        <!-- 视频数据 -->
+    <!-- 排行榜 -->
+    <div id="page-rank" class="page-rank page">
+      <div class="rankList scroller preview">
         <div class="item masonry-brick video" data-video="http://vjs.zencdn.net/v/oceans.mp4" data-id="38" data-src="imgs/test.png">
-          <video
-          controls 
-          src="http://vjs.zencdn.net/v/oceans.mp4"
-          x5-video-player-type="h5" 
-          x5-video-player-fullscreen="true"></video>
+          <video controls src="http://vjs.zencdn.net/v/oceans.mp4" x5-video-player-type="h5" x5-video-player-fullscreen="true"></video>
           <div class="poster">
             <img src="imgs/test.png">
             <i class="iconfont icon-play"></i>
@@ -62,30 +90,6 @@
             </span>
           </div>
         </div>
-
-
-        <!-- 图片数据 -->
-        <div class="item masonry-brick" data-id="100" data-src="imgs/default_lecture.png">
-          <img src="imgs/default_lecture.png">
-          <div class="pick-info">
-            <i class="type iconfont icon-tupianx"></i>
-            <span class="btnLike">
-              <i class="iconfont icon-dianzanx"></i>
-              <b>1232332</b>
-            </span>
-          </div>
-        </div>
-
-
-
-       
-      </div>
-    </div>
-
-    <!-- 排行榜 -->
-    <div id="page-rank" class="page-rank page">
-      <div class="rankList scroller preview">
-        
       </div>
     </div>
 

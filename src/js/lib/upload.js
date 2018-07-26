@@ -15,6 +15,8 @@ $.fn.UploadImg = function (o) {
     } else {
       var URL = URL || webkitURL;
       var blob = URL.createObjectURL(file);
+      console.log(blob);
+      
       // o.before(blob);
       _compress(blob, file);
       this.value = '';

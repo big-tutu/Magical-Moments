@@ -6,19 +6,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const webpack = require('webpack');
 
 const extractSass = new ExtractTextPlugin("css/[name].css"); // cssc处理
-// const adminSass = new ExtractTextPlugin({
-//   filename: 'css/admin.css'
-// })
-// const extractSass = new ExtractTextPlugin({
-//   filename: "css/styles.css",
-//   // disable: process.env.NODE_ENV === "development"
-// });
-
 module.exports = {
-  // entry: './src/index.js',
   entry: {  // 多入口
-    index: './src/js/index.js',
-    admin: './src/js/admin.js'
+    'index': './src/js/index.js',
+    'admin': './src/js/admin.js',
+    'login': './src/js/login.js'
   },
   output: {
     path: __dirname + "/dist/",
@@ -41,7 +33,7 @@ module.exports = {
       filename: 'login.html',
       hash: true,
       template: './login.html',
-      chunks: ['admin']
+      chunks: ['login']
     }),
     new HtmlWebpackPlugin({
       title: 'Admin',
@@ -105,6 +97,13 @@ module.exports = {
     contentBase: './dist',
     host: '192.168.1.100',
     // host: '192.168.123.70',
-    hot: true
+    // port: 8080,
+    hot: true,
+    proxy: {
+      '/api': {
+        target: "http://photo-moments.xyz",
+        changeOrigin: true,
+      }
+    }
   },
 };
