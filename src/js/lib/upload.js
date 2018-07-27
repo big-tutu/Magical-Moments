@@ -83,7 +83,7 @@ $.fn.UploadImg = function (o) {
 
   function _ajaximg(base64, type, file) {
     $.post(o.url, {
-      filedata: base64
+      media: base64
     }, function (res) {
       o.success(res);
     }, 'json');

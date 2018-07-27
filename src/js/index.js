@@ -18,13 +18,13 @@ import "../css/style.scss";
         LIST: '/api/media/list',
         WX_CONFIG: '/api/getConfig',
         UPLOAD: '/api/media/upload',
-        MAKE_LOVE: '/api/meida/love',
+        MAKE_LOVE: '/api/media/love',
       };
       this.init();
     }
     init() {
       // setHtmlFontSize();
-      // this.wxJssdk();
+      this.wxJssdk();
       this.main();
       this.prefix();
       // this.waterfallsFlow();
@@ -121,6 +121,8 @@ import "../css/style.scss";
       };
       self.loading = true;
       $.get(url, sendData, res => {
+        console.log('rest');
+        
         self.loading = false;
         if (res.ret === 0) {
           const data = res.data.dataList;
@@ -199,11 +201,6 @@ import "../css/style.scss";
     wxJssdk() {
       const api = this.api.WX_CONFIG;
       if (/MicroMessenger/i.test(navigator.userAgent)) {
-        document.addEventListener("WeixinJSBridgeReady", function () {
-          this.music.play('music');
-          this.music.play('time');
-          this.music.stop('time');
-        }, false);
 
         document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
           WeixinJSBridge.call('hideToolbar');
@@ -211,8 +208,57 @@ import "../css/style.scss";
 
 
         $.getScript("https://res.wx.qq.com/open/js/jweixin-1.0.0.js", function callback() {
-          console.log('test');
-
+          $.get(api, res => {
+            if (res.ret === 0) {
+              const data = res.data;
+              wx.config({
+                debug: false,
+                appId: data.jsapi_ticket,
+                timestamp: data.timestamp,
+                nonceStr: data.noncestr,
+                signature: data.signature,
+                jsApiList: [
+                  'onMenuShareTimeline',
+                  'onMenuShareAppMessage',
+                  'hideMenuItems'
+                ]
+              });
+              alert('data');
+              
+              wx.ready(function () {
+                console.log("shareData");
+                
+                const shareData = {
+                  title: 'Magical moments for Nike Direct FY19 Kick Off Day',
+                  link: 'http://photo-moments.xyz/mobile/index',
+                  desc: '这是分享的描述部分',
+                  imgUrl: 'http://photo-moments.xyz/static/imgs/background.jpg',
+                  success: function () {
+                  },
+                  cancel: function () {
+                  }
+                };
+                wx.onMenuShareTimeline(shareData);
+                wx.onMenuShareAppMessage(shareData);
+                wx.hideMenuItems({
+                  menuList: [
+                    'menuItem:share:qq',
+                    'menuItem:share:weiboApp',
+                    'menuItem:share:facebook',
+                    'menuItem:share:QZone',
+                    'menuItem:favorite',
+                    'menuItem:copyUrl',
+                    'menuItem:readMode',
+                    'menuItem:openWithQQBrowser',
+                    'menuItem:openWithSafari',
+                  ]
+                });
+              })
+              wx.error(function (res) {
+                // alert(res)
+              })
+            }
+          });
           // $.ajax({
           //   type: "post",
           //   url: "api/jssdk.php",
@@ -269,48 +315,48 @@ import "../css/style.scss";
           // });
 
 
-          wx.config({
-            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
-            appId: 'wx6fede0c9989aa98c', // 必填，公众号的唯一标识
-            timestamp: "1513666450", // 必填，生成签名的时间戳
-            nonceStr: "b5f88ccf-227a-41c9-9db3-d585ef6a933d", // 必填，生成签名的随机串
-            signature: "843f834527fc605de31303af5a5bfba97f406e1e",// 必填，签名，见附录1
-            jsApiList: [
-              'onMenuShareTimeline',
-              'onMenuShareAppMessage',
-              'hideMenuItems'
-            ]
-          })
-          wx.ready(function () {
-            App.shareData = {
-              title: 'Magical moments for Nike Direct FY19 Kick Off Day',
-              link: getUrl(),
-              desc: '銆€',
-              imgUrl: getUrl() + 'img/share.jpg?v=2',
-              success: function () {
-              },
-              cancel: function () {
-              }
-            };
-            wx.onMenuShareTimeline(App.shareData);
-            wx.onMenuShareAppMessage(App.shareData);
-            wx.hideMenuItems({
-              menuList: [
-                'menuItem:share:qq',
-                'menuItem:share:weiboApp',
-                'menuItem:share:facebook',
-                'menuItem:share:QZone',
-                'menuItem:favorite',
-                'menuItem:copyUrl',
-                'menuItem:readMode',
-                'menuItem:openWithQQBrowser',
-                'menuItem:openWithSafari',
-              ]
-            });
-          })
-          wx.error(function (res) {
-            // alert(res)
-          });
+          // wx.config({
+          //   debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
+          //   appId: 'wx6fede0c9989aa98c', // 必填，公众号的唯一标识
+          //   timestamp: "1513666450", // 必填，生成签名的时间戳
+          //   nonceStr: "b5f88ccf-227a-41c9-9db3-d585ef6a933d", // 必填，生成签名的随机串
+          //   signature: "843f834527fc605de31303af5a5bfba97f406e1e",// 必填，签名，见附录1
+          //   jsApiList: [
+          //     'onMenuShareTimeline',
+          //     'onMenuShareAppMessage',
+          //     'hideMenuItems'
+          //   ]
+          // })
+          // wx.ready(function () {
+          //   App.shareData = {
+          //     title: 'Magical moments for Nike Direct FY19 Kick Off Day',
+          //     link: getUrl(),
+          //     desc: '銆€',
+          //     imgUrl: getUrl() + 'img/share.jpg?v=2',
+          //     success: function () {
+          //     },
+          //     cancel: function () {
+          //     }
+          //   };
+          //   wx.onMenuShareTimeline(App.shareData);
+          //   wx.onMenuShareAppMessage(App.shareData);
+          //   wx.hideMenuItems({
+          //     menuList: [
+          //       'menuItem:share:qq',
+          //       'menuItem:share:weiboApp',
+          //       'menuItem:share:facebook',
+          //       'menuItem:share:QZone',
+          //       'menuItem:favorite',
+          //       'menuItem:copyUrl',
+          //       'menuItem:readMode',
+          //       'menuItem:openWithQQBrowser',
+          //       'menuItem:openWithSafari',
+          //     ]
+          //   });
+          // })
+          // wx.error(function (res) {
+          //   // alert(res)
+          // });
         })
       }
     }
@@ -320,14 +366,12 @@ import "../css/style.scss";
       const self = this;
       const url = this.api.MAKE_LOVE;
       $('.preview').on('tap', '.btnLike', function (e) {
-
         const _this = $(this).parents('.item');
         const $hint = $('#hint');
         if (_this.hasClass('disabled')) return;
 
         const id = _this.data('id');
-        const act = _this.data('love');
-        const res = {};
+        const act = parseInt(_this.attr('data-love'));
         _this.addClass('disabled');
         $.post(url, {
           id,
@@ -337,11 +381,13 @@ import "../css/style.scss";
           if (act === 1) {
             _this.find('.btnLike b').text(parseInt(_this.find('b').text()) + 1);
             _this.find('.btnLike i').addClass('icon-dianzanedx').removeClass('icon-dianzanx');
+            _this.removeAttr('love');
             _this.attr('data-love', 2);
             self.showTost('已点赞');
           } else {
             _this.find('.btnLike b').text(parseInt(_this.find('b').text()) - 1);
             _this.find('.btnLike i').removeClass('icon-dianzanedx').addClass('icon-dianzanx');
+            _this.removeAttr('love');
             _this.attr('data-love', 1);
             self.showTost('已取消点赞');
           }
