@@ -14,6 +14,9 @@ import "../css/style.scss";
       this.loading = false;
       this.hasMore = true;
       this.currentPage = 1;
+      this.User = {
+        voted: [],
+      };
       this.api = {
         LIST: '/api/media/list',
         WX_CONFIG: '/api/getConfig',
@@ -27,8 +30,8 @@ import "../css/style.scss";
       this.wxJssdk();
       this.main();
       this.prefix();
-      // this.waterfallsFlow();
-      this.previewPic();
+      this.waterfallsFlow();
+      // this.previewPic();
       this.handleLike();
       this.playVidoe();
       this.showTip();
@@ -60,15 +63,26 @@ import "../css/style.scss";
       $('#filedata').UploadImg({
         url: this.api.UPLOAD,
         width: '750',
+        showTips: this.showTost,
         quality: '0.8',
-        mixsize: '10000000',
+        mixsize: 1024 * 1024 * 3,
+        videoSize: 1024 * 1024 * 50,
+        videoType: 'video/ogg,video/mp4,video/WebM',
         type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
-        success: function (res) {
-          if (res.code == 1) {
-            page('index');
+        success:  (res) => {
+          if (res.ret === 0) {
+            this.showTost('上传成功');
+            setTimeout(() => {
+              this.page('home');
+            }, 500);
+            this.currentList = 'home';
           } else {
-            hint(res.msg);
+            this.showTost(res.msg || '上传失败稍后重试');
           }
+        },
+        error (res) {
+          console.log(res);
+          
         }
       });
     }
@@ -87,15 +101,13 @@ import "../css/style.scss";
     page(active) {
       const $activePage = $("#page-" + active);
       $activePage.addClass("active").siblings(".page").removeClass("active");
-      // $activePage.find('.scroller').html('');
+      $activePage.find('.scroller').html('');
       this.getList({
         page: 1,
-        count: 20,
-        patten: 1
+        count: active === 'home' ? 20 : 10,
+        patten: active === 'home' ? 1 : 2
       }, active);
     }
-
-
     // 显示和隐藏提示
     showTip() {
       const $tips = $('#page-rules');
@@ -121,16 +133,15 @@ import "../css/style.scss";
       };
       self.loading = true;
       $.get(url, sendData, res => {
-        console.log('rest');
-        
         self.loading = false;
         if (res.ret === 0) {
           const data = res.data.dataList;
+          self.videoId = [];
           if (data.length === 0) {
             self.showTost('已经是全部数据了');
             return;
           };
-          self.hasMore = data.length < 20;
+          self.hasMore = data.length === 20;
           const template = data.map(list => {
             const flag = patt.test(list.path);
             if (flag) {
@@ -145,14 +156,15 @@ import "../css/style.scss";
                 </div>
               </div>`
             } else {
-              return `<div class="item masonry-brick video" data-id="${list.id}" data-love="1">
+              self.videoId.push(list.id);
+              return `<div class="item video masonry-brick video" data-id="${list.id}" data-love="1">
                 <video
-                controls 
+                class="videoTag-${list.id}"
                 src="${list.path}"
                 x5-video-player-type="h5" 
                 x5-video-player-fullscreen="true"></video>
                 <div class="poster">
-                  <img src="imgs/test.png">
+                  <img src="">
                   <i class="iconfont icon-play"></i>
                 </div>
                 <div class="pick-info">
@@ -167,10 +179,22 @@ import "../css/style.scss";
           });
 
           $(`#page-${page}`).find('.scroller').append(template.join(''));
-          self.waterfallsFlow();
+          // 获取第一帧作为封面
+          for (const val of self.videoId) {
+            const $videos = $(`.videoTag-${val}`);
+            $videos.on("loadeddata", function (e) {
+              const $target = $(e.target);
+              const canvas = document.createElement("canvas");
+              canvas.width = 335;
+              canvas.height = 175;
+              canvas.getContext('2d').drawImage(e.target, 0, 0, canvas.width, canvas.height);
+              $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png"));
+            });
+          }
+          self.playVidoe();
           setInterval(function () {
             $('#masonry').masonry('reload');
-          }, 300);
+          }, 100);
         } else {
           self.showTost(res && res.msg || '网络错误，请稍后重试');
         }
@@ -181,7 +205,9 @@ import "../css/style.scss";
     previewPic() {
       $('.preview').on('tap', '.item', (e) => {
         const $target = $(e.target);
+        if ($target.hasClass)
         if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) return;
+        if ($target.hasClass('video')) return;
         const url = getUrl();
 
         const imgs = $target.closest('.preview').find('.item').map((idx, item) => {
@@ -212,21 +238,22 @@ import "../css/style.scss";
             if (res.ret === 0) {
               const data = res.data;
               wx.config({
-                debug: false,
-                appId: data.jsapi_ticket,
+                debug: true,
+                appId: data.appId,
                 timestamp: data.timestamp,
                 nonceStr: data.noncestr,
                 signature: data.signature,
                 jsApiList: [
                   'onMenuShareTimeline',
                   'onMenuShareAppMessage',
-                  'hideMenuItems'
+                  'hideMenuItems',
+                  'previewImage'
                 ]
               });
               alert('data');
               
               wx.ready(function () {
-                console.log("shareData");
+                alert("shareData");
                 
                 const shareData = {
                   title: 'Magical moments for Nike Direct FY19 Kick Off Day',
@@ -234,6 +261,7 @@ import "../css/style.scss";
                   desc: '这是分享的描述部分',
                   imgUrl: 'http://photo-moments.xyz/static/imgs/background.jpg',
                   success: function () {
+                    alert('success');
                   },
                   cancel: function () {
                   }
@@ -255,108 +283,10 @@ import "../css/style.scss";
                 });
               })
               wx.error(function (res) {
-                // alert(res)
+                alert('dd', JSON.stringify(res));
               })
             }
           });
-          // $.ajax({
-          //   type: "post",
-          //   url: "api/jssdk.php",
-          //   dataType: 'json',
-          //   data: {
-          //     url: window.location.href.split('#')[0]
-          //   },
-          //   success: function (data) {
-          //     wx.config({
-          //       debug: false,
-          //       appId: data.appid,
-          //       timestamp: data.timestamp,
-          //       nonceStr: data.noncestr,
-          //       signature: data.signature,
-          //       jsApiList: [
-          //         'onMenuShareTimeline',
-          //         'onMenuShareAppMessage',
-          //         'hideMenuItems'
-          //       ]
-          //     })
-          //     wx.ready(function () {
-          //       App.shareData = {
-          //         title: 'Magical moments for Nike Direct FY19 Kick Off Day',
-          //         link: getUrl(),
-          //         desc: '銆€',
-          //         imgUrl: getUrl() + 'img/share.jpg?v=2',
-          //         success: function () {
-          //         },
-          //         cancel: function () {
-          //         }
-          //       };
-          //       wx.onMenuShareTimeline(App.shareData);
-          //       wx.onMenuShareAppMessage(App.shareData);
-          //       wx.hideMenuItems({
-          //         menuList: [
-          //           'menuItem:share:qq',
-          //           'menuItem:share:weiboApp',
-          //           'menuItem:share:facebook',
-          //           'menuItem:share:QZone',
-          //           'menuItem:favorite',
-          //           'menuItem:copyUrl',
-          //           'menuItem:readMode',
-          //           'menuItem:openWithQQBrowser',
-          //           'menuItem:openWithSafari',
-          //         ]
-          //       });
-          //     })
-          //     wx.error(function (res) {
-          //       // alert(res)
-          //     })
-          //   },
-          //   error: function (xhr, ajaxOptions, thrownError) {
-          //   }
-          // });
-
-
-          // wx.config({
-          //   debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
-          //   appId: 'wx6fede0c9989aa98c', // 必填，公众号的唯一标识
-          //   timestamp: "1513666450", // 必填，生成签名的时间戳
-          //   nonceStr: "b5f88ccf-227a-41c9-9db3-d585ef6a933d", // 必填，生成签名的随机串
-          //   signature: "843f834527fc605de31303af5a5bfba97f406e1e",// 必填，签名，见附录1
-          //   jsApiList: [
-          //     'onMenuShareTimeline',
-          //     'onMenuShareAppMessage',
-          //     'hideMenuItems'
-          //   ]
-          // })
-          // wx.ready(function () {
-          //   App.shareData = {
-          //     title: 'Magical moments for Nike Direct FY19 Kick Off Day',
-          //     link: getUrl(),
-          //     desc: '銆€',
-          //     imgUrl: getUrl() + 'img/share.jpg?v=2',
-          //     success: function () {
-          //     },
-          //     cancel: function () {
-          //     }
-          //   };
-          //   wx.onMenuShareTimeline(App.shareData);
-          //   wx.onMenuShareAppMessage(App.shareData);
-          //   wx.hideMenuItems({
-          //     menuList: [
-          //       'menuItem:share:qq',
-          //       'menuItem:share:weiboApp',
-          //       'menuItem:share:facebook',
-          //       'menuItem:share:QZone',
-          //       'menuItem:favorite',
-          //       'menuItem:copyUrl',
-          //       'menuItem:readMode',
-          //       'menuItem:openWithQQBrowser',
-          //       'menuItem:openWithSafari',
-          //     ]
-          //   });
-          // })
-          // wx.error(function (res) {
-          //   // alert(res)
-          // });
         })
       }
     }
@@ -402,10 +332,12 @@ import "../css/style.scss";
     }
 
     playVidoe() {
-      const $playBtn = $('.item .poster');
+      const $playBtn = $('.scroller');
       const $videos = $('.item video');
       $videos.on('playing', e => {
-        const $target = $(e.target)
+        const $target = $(e.target);
+        console.log($target);
+        
         $target.closest('.item').find('.poster').hide();
         $target.closest('.item').find('.pick-info').hide();
       });
@@ -418,9 +350,9 @@ import "../css/style.scss";
         const $target = $(e.target);
         $target.closest('.item').find('.poster').show();
         $target.closest('.item').find('.pick-info').show();
-        $target.closest('.item').find('.poster i').addClass('icon-play').removeClass('icon-loading1')
+        $target.closest('.item').find('.poster i').addClass('icon-play').removeClass('icon-loading1');
       });
-      $playBtn.on('tap', (e) => {
+      $playBtn.on('tap', '.poster', (e) => {
         e.preventDefault();
         const $target = $(e.target);
         const $parentItem = $target.closest('.item').find('video');
@@ -472,9 +404,9 @@ import "../css/style.scss";
         
         const distance = contentH - scrollH;
         let currentPage = self.currentPage;
-        console.log(self.loading);
+        console.log(self.loading, self.hasMore);
         
-        if (distance < 1800 && !self.loading) {
+        if (distance < 1800 && !self.loading && self.hasMore) {
           currentPage += 1;
           self.currentPage = currentPage;
           self.getList({

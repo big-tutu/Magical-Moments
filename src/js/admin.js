@@ -124,8 +124,6 @@ import "../css/admin.scss";
       const self = this;
       $('.content').on('click', '.delete', e => {
         const id = $(e.target).closest('.item').data('id');
-        console.log(id);
-        
         $.post(`/api/media/${id}/delete`,res => {
           if (res.ret === 0) {
             const sendData = {

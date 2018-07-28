@@ -289,12 +289,6 @@ aside.turnBox p { color: #fff;}
       -webkit-transform: translate(-50%, -50%);
       color: #fff;
       font-size: 60px;
-      // transition: All 0.4s ease-in-out;
-      // -webkit-transition: All 0.4s ease-in-out;
-      // animation: loading 1s linear infinite;
-      // -webkit-animation: loading 1s linear infinite;
-      // transform-origin:50% 50%;
-      // -webkit-transform-origin:0 0;
     }
     i.icon-loading1 {
       font-size: 28px;
@@ -306,23 +300,8 @@ aside.turnBox p { color: #fff;}
     img {
       width: 100%;
       height: 100%;
-      // position: relative;
       border-radius: 12px;
-      // &::after {
-      //   content: '爆发斯蒂芬';
-      //   position: absolute;
-      //   left: 50%;
-      //   top: 50%;
-      //   transform: translate(-50%, -50%);
-      // }
     }
-    // img::after {
-    //   content: '爆发斯蒂芬';
-    //   position: absolute;
-    //   left: 50%;
-    //   top: 50%;
-    //   transform: translate(-50%, -50%);
-    // }
   }
 }
 @keyframes loading {
@@ -373,22 +352,3 @@ aside.turnBox p { color: #fff;}
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
   }
-
-  // .container .mask {
-  //   position: fixed;
-  //   top: 0;
-  //   right: 0;
-  //   width: 100%;
-  //   height: 100%;
-  //   line-height: 1334px;
-  //   text-align: center;
-  //   overflow: auto;
-  //   z-index: 400;
-  //   box-sizing: border-box;
-  //   background: rgb(0,0,0);
-  //   font-size: 32px;
-  //   color: #fff;
-  //   // video {
-  //   //   width: 100%;
-  //   // }
-  // }

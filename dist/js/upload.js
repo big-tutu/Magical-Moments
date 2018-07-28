@@ -1,51 +1,32 @@
 $.fn.UploadImg = function (o) {
   const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
   this.change(function () {
-    const file = this.files['0'];
-    const size = file.size;
+    var file = this.files['0'];
     const mediaName = file.name;
     const flag = patt.test(mediaName);
-    console.log(file, flag);
+    if (!flag) {
+      // 视频上传
+      uploadVideo(file);
+      return;
+    }
     
-    if (!flag && size >= o.videoSize) {
-      o.showTips(`视频不能超出50M`);
+    // $('#error').html(file.type);
+    if (file.size && file.size > o.mixsize) {
+      o.showTips('图片尺寸超出限制');
       this.value = '';
-      return;
-    } else if (!flag && o.videoType.indexOf(file.type) < 0) {
+    } else if (o.type && o.type.indexOf(file.type) < 0) {
       o.error(o.type);
       this.value = '';
-      return;
-    } else if (flag && size > o.mixsize) {
-      o.showTips(`图片大小不能大于3M`);
-      this.value = '';
-      return
-    } else if (flag && o.type.indexOf(file.type) < 0) {
-      o.error(o.type);
-      this.value = '';
-      return
     } else {
-      var formData = new FormData();
-      formData.append('media', file);
-      $.ajax({
-        url: o.url,
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: (res) => {
-          o.success(res);
-        },
-        error: (res) => {
-          o.error(res)
-        }
-      })
-
+      var URL = URL || webkitURL;
+      var blob = URL.createObjectURL(file);
+      // o.before(blob);
+      _compress(blob, file);
       this.value = '';
     }
   });
 
 
-  // 图片处理
   function _compress(blob, file) {
     var orientation = 0;
     EXIF.getData(file, function () {
@@ -108,22 +89,15 @@ $.fn.UploadImg = function (o) {
       media: base64
     }, function (res) {
       o.success(res);
-    }, 'form-data');
-    var formData = new FormData();
-    formData.append('media', type);
-    $.ajax({
-      type: 'post',
-      url: o.url,
-      data: formData,
-      success: (res) => {
-        o.success(res);
-      }
-    })
+    }, 'json');
   }
 
 
   function uploadVideo(file) {
     //限制文件大小
+    // const $hint = $('#hint');/
+    console.log(file);
+    
     var fileSize = file.size;
     if (fileSize >= 1024 * 1024 * 50) {
       // box.msg('上传视频超出大小，请选择小一点的视频！');

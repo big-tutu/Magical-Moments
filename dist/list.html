@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Photo Moments</title>
+<link href="css/admin.css?59b1e83a33fe26cea324" rel="stylesheet"></head>
+<body>
+  <div class="list-container">
+    <!-- 头部 -->
+    <header>
+      <a href="#" class="logo">
+        <img src="imgs/test.png" alt="">
+        <span>Photo Moments</span>
+      </a>
+      <div class="user-info">
+
+        <a class="c-avatar" href="#" id="dropdwonMenuAvatar" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <span>Admin</span>
+          <img class="c-avatar__img" src="imgs/test.png" alt="User's Profile Picture">
+        </a>
+      
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdwonMenuAvatar">
+          <a class="dropdown-item logout" href="#">退出</a>
+        </div>
+      </div>
+    </header>
+
+
+
+    <!-- 内容区域 -->
+    <div class="content">
+      <div class="list">
+      <ul>
+        <!-- 展示的项d -->
+        <li class="item" data-id="20">
+          <div class="img">
+            <img src="imgs/test.png" alt="">
+          </div>
+          <div class="info">
+            <p><span>类型：</span><span>图片</span></p>
+            <p><span>上传时间：</span><span>2018-20-30</span></p>
+            <a href="#" class="delete">删除</a>
+          </div>
+        </li>
+
+
+        <li class="item" data-id="12">
+          <div class="img">
+            <video controls poster="imgs/timg.jpg" src="http://vjs.zencdn.net/v/oceans.mp4"></video>
+          </div>
+          <div class="info">
+            <p><span>类型：</span><span>视频</span></p>
+            <p><span>上传时间：</span><span>2018-20-30</span></p>
+            <a href="#" class="delete">删除</a>
+          </div>
+        </li>
+      </ul>
+      </div>
+    </div>
+
+    <!-- 底部分页器 -->
+    <div class="footer">
+      <div class="paginate clearfix"></div>
+    </div>
+  </div>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/jquery.pagination.js"></script>
+<script type="text/javascript" src="js/admin.js?59b1e83a33fe26cea324"></script></body>
+</html>
