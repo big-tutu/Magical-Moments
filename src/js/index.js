@@ -206,8 +206,6 @@ import "../css/style.scss";
     // 点击查看大图
     previewPic() {
       $('.preview').on('tap', '.item img', (e) => {
-        console.log(e.target);
-        
         const $target = $(e.target).parents('.item');
         if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) return;
         if ($target.hasClass('video')) return;
@@ -243,36 +241,22 @@ import "../css/style.scss";
             if (res.ret === 0) {
               const data = res.data;
               console.log('jssdk', data);
-              // wx.config({
-              //   debug: true,
-              //   appId: data.appId,
-              //   timestamp: data.timestamp,
-              //   nonceStr: data.noncestr,
-              //   signature: data.signature,
-              //   jsApiList: [
-              //     'onMenuShareTimeline',
-              //     'onMenuShareAppMessage',
-              //     'hideMenuItems',
-              //     'previewImage'
-              //   ]
-              // });
+              wx.config({
+                debug: true,
+                appId: data.appId,
+                timestamp: data.timestamp,
+                nonceStr: data.noncestr,
+                signature: data.signature,
+                jsApiList: [
+                  'onMenuShareTimeline',
+                  'onMenuShareAppMessage',
+                  'hideMenuItems',
+                  'previewImage'
+                ]
+              });
               alert('data');
               
               wx.ready(function () {
-                wx.config({
-                  debug: true,
-                  appId: data.appId,
-                  timestamp: data.timestamp,
-                  nonceStr: data.noncestr,
-                  signature: data.signature,
-                  jsApiList: [
-                    'onMenuShareTimeline',
-                    'onMenuShareAppMessage',
-                    'hideMenuItems',
-                    'previewImage'
-                  ]
-                });
-                
                 const shareData = {
                   title: 'Magical moments for Nike Direct FY19 Kick Off Day',
                   link: 'http://photo-moments.xyz/mobile/index',
