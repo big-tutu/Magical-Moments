@@ -1,4 +1,6 @@
 // import setHtmlFontSize from './js/rem';
+import VConsole from 'vconsole/dist/vconsole.min.js';
+let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   const getUrl = function () {
@@ -7,16 +9,10 @@ import "../css/style.scss";
   }
   class App {
     constructor() {
-      this.music = {
-        audio: {}
-      };
       this.currentList = 'home';
       this.loading = false;
       this.hasMore = true;
       this.currentPage = 1;
-      this.User = {
-        voted: [],
-      };
       this.api = {
         LIST: '/api/media/list',
         WX_CONFIG: '/api/getConfig',
@@ -26,12 +22,11 @@ import "../css/style.scss";
       this.init();
     }
     init() {
-      // setHtmlFontSize();
       this.wxJssdk();
       this.main();
       this.prefix();
       this.waterfallsFlow();
-      // this.previewPic();
+      this.previewPic();
       this.handleLike();
       this.playVidoe();
       this.showTip();
@@ -43,6 +38,9 @@ import "../css/style.scss";
       }, 'home');
     }
     main() {
+      $.get('/api/mockCookie', res => {
+        console.log(res);
+      });
       $('.btn-upload').on('tap', e => {
         e.preventDefault();
         $('#filedata').trigger('click');
@@ -67,7 +65,7 @@ import "../css/style.scss";
         quality: '0.8',
         mixsize: 1024 * 1024 * 3,
         videoSize: 1024 * 1024 * 50,
-        videoType: 'video/ogg,video/mp4,video/WebM',
+        videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
         type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
         success:  (res) => {
           if (res.ret === 0) {
@@ -126,8 +124,10 @@ import "../css/style.scss";
     }
     getList (ops, page) {
       const url = this.api.LIST;
+      const ua = navigator.userAgent.toLowerCase();
+      const isWeixin = ua.indexOf('micromessenger') !== -1;
       const self = this;
-      const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
+      // const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
       const sendData = {
         ...ops
       };
@@ -137,40 +137,41 @@ import "../css/style.scss";
         if (res.ret === 0) {
           const data = res.data.dataList;
           self.videoId = [];
-          if (data.length === 0) {
-            self.showTost('已经是全部数据了');
-            return;
+          if (data.length < 20) {
+            // self.showTost('已经是全部数据了');
+            this.hasMore = false;
+            // return;
           };
           self.hasMore = data.length === 20;
           const template = data.map(list => {
-            const flag = patt.test(list.path);
-            if (flag) {
-              return `<div class="item masonry-brick" data-id="${list.id}" data-src="${list.path}" data-love="1">
+            // const flag = patt.test(list.path);
+            if (list.mediaType === 1) {
+              return `<div class="item masonry-brick" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <img src="${list.path}">
                 <div class="pick-info">
                   <i class="type iconfont icon-tupianx"></i>
                   <span class="btnLike">
-                    <i class="iconfont icon-dianzanx"></i>
+                    <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
                     <b>${list.voteNum}</b>
                   </span>
                 </div>
               </div>`
             } else {
               self.videoId.push(list.id);
-              return `<div class="item video masonry-brick video" data-id="${list.id}" data-love="1">
+              return `<div class="item video masonry-brick video" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <video
                 class="videoTag-${list.id}"
                 src="${list.path}"
                 x5-video-player-type="h5" 
                 x5-video-player-fullscreen="true"></video>
                 <div class="poster">
-                  <img src="">
+                  <img src="/static/imgs/test.png">
                   <i class="iconfont icon-play"></i>
                 </div>
                 <div class="pick-info">
                   <i class="type iconfont icon-shipinx"></i>
                   <span class="btnLike">
-                    <i class="iconfont icon-dianzanx"></i>
+                    <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
                     <b>${list.voteNum}</b>
                   </span>
                 </div>
@@ -188,7 +189,8 @@ import "../css/style.scss";
               canvas.width = 335;
               canvas.height = 175;
               canvas.getContext('2d').drawImage(e.target, 0, 0, canvas.width, canvas.height);
-              $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png"));
+              $target.attr("poster", canvas.toDataURL("image/png"));
+              $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png") || '/static/imgs/test.png');
             });
           }
           self.playVidoe();
@@ -203,21 +205,24 @@ import "../css/style.scss";
 
     // 点击查看大图
     previewPic() {
-      $('.preview').on('tap', '.item', (e) => {
-        const $target = $(e.target);
-        if ($target.hasClass)
+      $('.preview').on('tap', '.item img', (e) => {
+        console.log(e.target);
+        
+        const $target = $(e.target).parents('.item');
         if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) return;
         if ($target.hasClass('video')) return;
-        const url = getUrl();
-
-        const imgs = $target.closest('.preview').find('.item').map((idx, item) => {
+        const imgs = [];
+        const urls = $target.parents('.preview').find('.item').map((idx, item) => {
           const $current = $(item);
-          return url + $current.data('src');
+          const url = $current.attr('data-src');
+          if (url) {
+            imgs.push(url);
+          }
+          return url;
         });
-
         if (typeof wx !== 'undefined') {
           wx.previewImage({
-            current: url + $target.data('src') || $target.attr('src'),
+            current: $target.data('src') || $target.attr('src'),
             urls: imgs
           });
         }
@@ -237,23 +242,36 @@ import "../css/style.scss";
           $.get(api, res => {
             if (res.ret === 0) {
               const data = res.data;
-              wx.config({
-                debug: true,
-                appId: data.appId,
-                timestamp: data.timestamp,
-                nonceStr: data.noncestr,
-                signature: data.signature,
-                jsApiList: [
-                  'onMenuShareTimeline',
-                  'onMenuShareAppMessage',
-                  'hideMenuItems',
-                  'previewImage'
-                ]
-              });
+              console.log('jssdk', data);
+              // wx.config({
+              //   debug: true,
+              //   appId: data.appId,
+              //   timestamp: data.timestamp,
+              //   nonceStr: data.noncestr,
+              //   signature: data.signature,
+              //   jsApiList: [
+              //     'onMenuShareTimeline',
+              //     'onMenuShareAppMessage',
+              //     'hideMenuItems',
+              //     'previewImage'
+              //   ]
+              // });
               alert('data');
               
               wx.ready(function () {
-                alert("shareData");
+                wx.config({
+                  debug: true,
+                  appId: data.appId,
+                  timestamp: data.timestamp,
+                  nonceStr: data.noncestr,
+                  signature: data.signature,
+                  jsApiList: [
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'hideMenuItems',
+                    'previewImage'
+                  ]
+                });
                 
                 const shareData = {
                   title: 'Magical moments for Nike Direct FY19 Kick Off Day',
@@ -283,8 +301,8 @@ import "../css/style.scss";
                 });
               })
               wx.error(function (res) {
-                alert('dd', JSON.stringify(res));
-              })
+                console('error', res)
+              });
             }
           });
         })
@@ -336,8 +354,6 @@ import "../css/style.scss";
       const $videos = $('.item video');
       $videos.on('playing', e => {
         const $target = $(e.target);
-        console.log($target);
-        
         $target.closest('.item').find('.poster').hide();
         $target.closest('.item').find('.pick-info').hide();
       });
@@ -372,7 +388,7 @@ import "../css/style.scss";
             $(".turnBox").remove();
           }
           if (window.orientation == 90 || window.orientation == -90) {
-            $("body").append('<aside class="turnBox"><img src="imgs/turn.png" class="turn"><p>请将手机调至竖屏状态，获得最佳浏览体验</p></aside>');
+            $("body").append('<aside class="turnBox"><img src="/static/imgs/turn.png" class="turn"><p>请将手机调至竖屏状态，获得最佳浏览体验</p></aside>');
           }
         });
         $('.container').on('touchmove', function (e) {
@@ -400,12 +416,8 @@ import "../css/style.scss";
         const $target = $(this);
         const contentH = parseInt($target.find('.item:last').css('top')) + parseInt($target.find('.item:last').css('height'));
         const scrollH = $target.scrollTop();
-        console.log(contentH, scrollH);
-        
         const distance = contentH - scrollH;
         let currentPage = self.currentPage;
-        console.log(self.loading, self.hasMore);
-        
         if (distance < 1800 && !self.loading && self.hasMore) {
           currentPage += 1;
           self.currentPage = currentPage;

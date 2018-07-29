@@ -12,6 +12,7 @@ import "../css/admin.scss";
       // this.menu();
       this.getList();
       this.deleteItem();
+      this.previePic();
     }
 
     getList (ops = {}) {
@@ -47,7 +48,7 @@ import "../css/admin.scss";
             } else {
               return `<li class="item" data-id="${item.id}">
                 <div class="img">
-                  <video controls poster="imgs/timg.jpg" src="${item.path}"></video>
+                  <video controls src="${item.path}"></video>
                 </div>
                 <div class="info">
                   <p><span>类型：</span><span>视频</span></p>
@@ -59,6 +60,7 @@ import "../css/admin.scss";
           });
 
           $wrapper.html(template.join(''));
+          window.scrollTo(0, 0);
           self.pagination({
             current: self.currentPage,
             totalData: self.totalCount,
@@ -136,6 +138,25 @@ import "../css/admin.scss";
             alert(res && res.msg || '网络错误，稍后重试');
           }
         });
+      })
+    }
+
+
+
+    // 点击查看大图
+    previePic () {
+      $('.content').on('click', 'img', e => {
+        console.log(e);
+        
+        const $target = $(e.target);
+        const url = $target.attr('src');
+        $('body').append(`<div class="mask">
+        <img src="${url}"/>
+        </div>`)
+      });
+
+      $('body').on('click', '.mask', function () {
+        $(this).remove();
       })
     }
   }

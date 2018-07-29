@@ -55,7 +55,7 @@ HTML, body {
 .login-container {
   height: 100%;
   width: 100%;
-  background: url('/imgs/background.jpg');
+  background: url('/static/imgs/background.jpg');
   .logo-box {
     position: absolute;
     left: 50%;
@@ -305,6 +305,22 @@ HTML, body {
         font-size: 14px;
       }
     }
+  }
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0,.9);
+  img {
+    position: absolute; 
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 400px;
   }
 }
 

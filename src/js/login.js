@@ -23,7 +23,7 @@ import "../css/admin.scss";
             password
           }, res => {
             if (res.ret === 0) {
-              window.location.href = '/list.html';
+              window.location.href = '/admin/index';
             } else {
               alert(res.msg || '网络发生错误，请稍后重试');
             }

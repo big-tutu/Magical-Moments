@@ -5,7 +5,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const webpack = require('webpack');
 
-const extractSass = new ExtractTextPlugin("css/[name].css"); // cssc处理
+const extractSass = new ExtractTextPlugin("static/css/[name].css"); // cssc处理
 module.exports = {
   entry: {  // 多入口
     'index': './src/js/index.js',
@@ -14,7 +14,7 @@ module.exports = {
   },
   output: {
     path: __dirname + "/dist/",
-    filename: 'js/[name].js',
+    filename: 'static/js/[name].js',
   },
   devtool: 'inline-source-map',
   plugins: [
@@ -50,11 +50,11 @@ module.exports = {
     new CopyWebpackPlugin([
       {
         from: __dirname + '/src/js/lib',
-        to: __dirname + '/dist/js'
+        to: __dirname + '/dist/static/js'
       },
       {
         from: __dirname + '/src/imgs/',
-        to: __dirname + '/dist/imgs'
+        to: __dirname + '/dist/static/imgs'
       }
     ]),
     extractSass,
@@ -95,8 +95,8 @@ module.exports = {
   },
   devServer: {
     contentBase: './dist',
-    // host: '192.168.1.100',
-    host: '192.168.123.70',
+    host: '192.168.1.100',
+    // host: '192.168.123.70',
     // port: 8080,
     hot: true,
     proxy: {

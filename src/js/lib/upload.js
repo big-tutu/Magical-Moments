@@ -1,3 +1,4 @@
+// var vConsole = new VConsole();
 $.fn.UploadImg = function (o) {
   const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
   this.change(function () {
@@ -5,14 +6,13 @@ $.fn.UploadImg = function (o) {
     const size = file.size;
     const mediaName = file.name;
     const flag = patt.test(mediaName);
-    console.log(file, flag);
-    
     if (!flag && size >= o.videoSize) {
-      o.showTips(`视频不能超出50M`);
+      o.showTips(`视频不能超出40M`);
       this.value = '';
       return;
     } else if (!flag && o.videoType.indexOf(file.type) < 0) {
       o.error(o.type);
+      o.showTips(`请上传mp4格式的视频`);
       this.value = '';
       return;
     } else if (flag && size > o.mixsize) {
@@ -21,11 +21,16 @@ $.fn.UploadImg = function (o) {
       return
     } else if (flag && o.type.indexOf(file.type) < 0) {
       o.error(o.type);
+      o.showTips(`请上传png/jpg/jpeg格式的图片`);
       this.value = '';
       return
     } else {
       var formData = new FormData();
+      o.showTips('正在上传文件...');
       formData.append('media', file);
+      console.log(flag);
+      
+      formData.append('mediaType', flag ? 1 : 2);
       $.ajax({
         url: o.url,
         type: 'POST',
@@ -33,13 +38,14 @@ $.fn.UploadImg = function (o) {
         contentType: false,
         processData: false,
         success: (res) => {
+          o.showTips('上传成功');
           o.success(res);
         },
         error: (res) => {
+          o.showTips('上传失败');
           o.error(res)
         }
-      })
-
+      });
       this.value = '';
     }
   });
@@ -167,8 +173,6 @@ $.fn.UploadImg = function (o) {
 
   //返回值
   function uploadComplete(evt) {
-    console.log(evt);
-    
     var data = JSON.parse(evt.target.responseText);
     if (data.ret == 1) {
       //视频信息存储
