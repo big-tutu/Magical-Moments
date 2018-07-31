@@ -1,6 +1,6 @@
-// import setHtmlFontSize from './js/rem';
-import VConsole from 'vconsole/dist/vconsole.min.js';
-let vConsole = new VConsole();
+
+// import VConsole from 'vconsole/dist/vconsole.min.js';
+// let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   const getUrl = function () {
@@ -38,9 +38,8 @@ import "../css/style.scss";
       }, 'home');
     }
     main() {
-      $.get('/api/mockCookie', res => {
-        console.log(res);
-      });
+      // $.get('/api/mockCookie', res => {
+      // });
       $('.btn-upload').on('tap', e => {
         e.preventDefault();
         $('#filedata').trigger('click');
@@ -79,7 +78,6 @@ import "../css/style.scss";
           }
         },
         error (res) {
-          console.log(res);
           
         }
       });
@@ -124,13 +122,11 @@ import "../css/style.scss";
     }
     getList (ops, page) {
       const url = this.api.LIST;
-      const ua = navigator.userAgent.toLowerCase();
-      const isWeixin = ua.indexOf('micromessenger') !== -1;
+      // const ua = navigator.userAgent.toLowerCase();
+      // const isWeixin = ua.indexOf('micromessenger') !== -1;
       const self = this;
       // const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
-      const sendData = {
-        ...ops
-      };
+      const sendData = ops;
       self.loading = true;
       $.get(url, sendData, res => {
         self.loading = false;
@@ -162,8 +158,7 @@ import "../css/style.scss";
                 <video
                 class="videoTag-${list.id}"
                 src="${list.path}"
-                x5-video-player-type="h5" 
-                x5-video-player-fullscreen="true"></video>
+                ></video>
                 <div class="poster">
                   <img src="/static/imgs/test.png">
                   <i class="iconfont icon-play"></i>
@@ -231,21 +226,22 @@ import "../css/style.scss";
       const api = this.api.WX_CONFIG;
       if (/MicroMessenger/i.test(navigator.userAgent)) {
 
-        document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-          WeixinJSBridge.call('hideToolbar');
-        });
+        // document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+        //   WeixinJSBridge.call('hideToolbar');
+        // });
 
 
         $.getScript("https://res.wx.qq.com/open/js/jweixin-1.0.0.js", function callback() {
-          $.get(api, res => {
+          $.get(api, {
+            path: window.location.href.split('#')[0]
+          }, res => {
             if (res.ret === 0) {
               const data = res.data;
-              console.log('jssdk', data);
               wx.config({
                 debug: true,
                 appId: data.appId,
                 timestamp: data.timestamp,
-                nonceStr: data.noncestr,
+                nonceStr: data.nonceStr,
                 signature: data.signature,
                 jsApiList: [
                   'onMenuShareTimeline',
@@ -254,16 +250,14 @@ import "../css/style.scss";
                   'previewImage'
                 ]
               });
-              alert('data');
-              
               wx.ready(function () {
                 const shareData = {
-                  title: 'Magical moments for Nike Direct FY19 Kick Off Day',
-                  link: 'http://photo-moments.xyz/mobile/index',
+                  title: 'Photo moments',
+                  link: 'http://photo-moments.yxking.xyz/mobile/index',
                   desc: '这是分享的描述部分',
-                  imgUrl: 'http://photo-moments.xyz/static/imgs/background.jpg',
+                  imgUrl: 'http://photo-moments.yxking.xyz/static/imgs/default_lecture.png',
                   success: function () {
-                    alert('success');
+                    // alert('success');
                   },
                   cancel: function () {
                   }
@@ -285,7 +279,7 @@ import "../css/style.scss";
                 });
               })
               wx.error(function (res) {
-                console('error', res)
+                // window.console('error', res)
               });
             }
           });

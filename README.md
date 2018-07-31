@@ -129,3 +129,5 @@ input:-webkit-autofill:focus {
  transition: background-color 5000s ease-in-out 0s;
 }
 ```
+
+* 关于视频封面 https://segmentfault.com/a/1190000006857675   ‘在ios下，视频被嵌入后，媒体的元数据加载完成后，会以全屏的形式显示出来，或者加个poster，可以看到画面。但在android下，多数机子是不显示视频画面的，要不就是显示一个黑色的还不是全屏的播放控件，即使及加个poster封面也不济于是。因为poster在android兼容的并不好，不如在视频上层加个div铺张图片，这个比较好的处理方式应该是：视频上加一层div做封面，由于android不允许视频上层有东西，所以首先将视频设为的width：1px，当播放后，上层的封面remove掉，同时width：100%或者你想要的宽度’
