@@ -153,6 +153,7 @@ HTML, body {
         border-radius: 50%;
         vertical-align: middle;
       }
+
       .dropdown-menu {
         display: none;
         position: absolute;
@@ -171,6 +172,9 @@ HTML, body {
         a:hover {
           background-color: #e6f7ff;
         }
+      }
+      .active {
+        display: block;
       }
       a {
         color: #000

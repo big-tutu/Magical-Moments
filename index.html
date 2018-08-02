@@ -91,7 +91,46 @@
       <input type="file" id="filedata" name="filedata" accept="image/*,video/*"/>
     </div>
     <!-- e = 资源上传控件 -->
-    
+
+
+    <!-- 播放器 -->
+    <div class="videoContainer">
+        <video 
+          id="j-video"
+          class="wrapper"
+          controls
+          playsinline 
+          webkit-playsinline
+          x-webkit-airplay="allow"
+          preload="auto"
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="true"
+        >
+          <source src="http://www.w3school.com.cn/example/html5/mov_bbb.mp4" type="video/mp4">
+          <source src="http://www.w3school.com.cn/example/html5/mov_bbb.ogg" type="video/ogg">
+          <source src="http://www.w3school.com.cn/example/html5/mov_bbb.webm" type="video/webm">
+          你的浏览器不支持H5播放器
+        </video>
+        <canvas id="canvas"></canvas>
+        <div class="close-icon">
+          <i class="iconfont icon-loading"></i>
+        </div>
+        <!-- <video id="example_video_1"
+         class="video-js vjs-default-skin"
+         playsinline
+         webkit-playsinline 
+         x-webkit-airplay="allow" 
+         preload="auto" 
+         x5-video-player-type="h5" 
+         x5-video-player-fullscreen="true" 
+         controls preload="none" width="640" height="264" poster="http://vjs.zencdn.net/v/oceans.png">
+          <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+        </video> -->
+    </div>
+<!-- x5-video-player-type="h5" x5-video-player-fullscreen="false" -->
+           <!-- x5-video-player-type="h5" x5-video-player-fullscreen="true" src="/static/imgs/WeChatSight131.mp4" -->
+    <!-- 进度条 -->
+    <div class="progress"></div>
 
 
   </div>

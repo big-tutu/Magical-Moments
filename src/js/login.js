@@ -16,8 +16,6 @@ import "../css/admin.scss";
           alert('用户名或密码不能为空');
           return;
         } else {
-          console.log(username, password);
-          
           $.post(api, {
             username,
             password

@@ -9,7 +9,7 @@ import "../css/admin.scss";
     }
     init () {
       // this.pagination();
-      // this.menu();
+      this.menu();
       this.getList();
       this.deleteItem();
       this.previePic();
@@ -48,7 +48,10 @@ import "../css/admin.scss";
             } else {
               return `<li class="item" data-id="${item.id}">
                 <div class="img">
-                  <video controls src="${item.path}"></video>
+                  <video 
+                    x5-video-player-type="h5"
+                    x5-video-player-fullscreen="true"
+                    controls src="${item.path}"></video>
                 </div>
                 <div class="info">
                   <p><span>类型：</span><span>视频</span></p>
@@ -102,24 +105,20 @@ import "../css/admin.scss";
     }
 
     // // 唤起菜单
-    // menu () {
-    //   const $menu = $('.dropdown-menu');
-    //   $('.user-info').mouseenter(e => {
-    //     e.stopPropagation();
-    //     $('.dropdown-menu').stop().slideDown();
-    //   });
-    //   $('.user-info').mouseleave(e => {
-    //     e.stopPropagation();
-    //     $('.dropdown-menu').stop().slideUp();
-    //   });
-    // }
-
-    // // 退出登录
-    // logout () {
-    //   $('.logout').click(() => {
-
-    //   });
-    // }
+    menu () {
+      const $menu = $('.dropdown-menu');
+      $('.user-info').click(e => {
+        if ($(e.target).hasClass('logout')) {
+          window.location.href = 'http://photo-moments.yxking.xyz/admin/logout';
+          return;
+        } 
+        if ($menu.hasClass('active')) {
+          $menu.removeClass('active');
+        } else {
+          $menu.addClass('active');
+        }
+      });
+    }
 
     // 删除
     deleteItem () {

@@ -1,6 +1,6 @@
 
-// import VConsole from 'vconsole/dist/vconsole.min.js';
-// let vConsole = new VConsole();
+import VConsole from 'vconsole/dist/vconsole.min.js';
+let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   const getUrl = function () {
@@ -28,7 +28,7 @@ import "../css/style.scss";
       this.waterfallsFlow();
       this.previewPic();
       this.handleLike();
-      this.playVidoe();
+      // this.playVidoe();
       this.showTip();
       this.scrollLoadMore();
       this.getList({
@@ -38,8 +38,7 @@ import "../css/style.scss";
       }, 'home');
     }
     main() {
-      // $.get('/api/mockCookie', res => {
-      // });
+      // $('videoContainer video')[0].play();
       $('.btn-upload').on('tap', e => {
         e.preventDefault();
         $('#filedata').trigger('click');
@@ -122,10 +121,7 @@ import "../css/style.scss";
     }
     getList (ops, page) {
       const url = this.api.LIST;
-      // const ua = navigator.userAgent.toLowerCase();
-      // const isWeixin = ua.indexOf('micromessenger') !== -1;
       const self = this;
-      // const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
       const sendData = ops;
       self.loading = true;
       $.get(url, sendData, res => {
@@ -134,9 +130,7 @@ import "../css/style.scss";
           const data = res.data.dataList;
           self.videoId = [];
           if (data.length < 20) {
-            // self.showTost('已经是全部数据了');
             this.hasMore = false;
-            // return;
           };
           self.hasMore = data.length === 20;
           const template = data.map(list => {
@@ -153,16 +147,28 @@ import "../css/style.scss";
                 </div>
               </div>`
             } else {
-              self.videoId.push(list.id);
-              return `<div class="item video masonry-brick video" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}">
-                <video
-                class="videoTag-${list.id}"
-                src="${list.path}"
-                ></video>
-                <div class="poster">
-                  <img src="/static/imgs/test.png">
-                  <i class="iconfont icon-play"></i>
-                </div>
+              // self.videoId.push(list.id);
+              // return `<div class="item video masonry-brick" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}">
+              //   <video
+              //   autoplay
+              //   class="video-active videoTag-${list.id}"
+              //   src="${list.path}"
+              //   ></video>
+              //   <div class="poster">
+              //     <img src="/static/imgs/test.png">
+              //     <i class="iconfont icon-play"></i>
+              //   </div>
+              //   <div class="pick-info">
+              //     <i class="type iconfont icon-shipinx"></i>
+              //     <span class="btnLike">
+              //       <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
+              //       <b>${list.voteNum}</b>
+              //     </span>
+              //   </div>
+              // </div>`
+              return `<div class="item video masonry-brick" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}" data-videoPath="${list.path}">
+                
+                <img src="${list.videoCover}">
                 <div class="pick-info">
                   <i class="type iconfont icon-shipinx"></i>
                   <span class="btnLike">
@@ -176,19 +182,19 @@ import "../css/style.scss";
 
           $(`#page-${page}`).find('.scroller').append(template.join(''));
           // 获取第一帧作为封面
-          for (const val of self.videoId) {
-            const $videos = $(`.videoTag-${val}`);
-            $videos.on("loadeddata", function (e) {
-              const $target = $(e.target);
-              const canvas = document.createElement("canvas");
-              canvas.width = 335;
-              canvas.height = 175;
-              canvas.getContext('2d').drawImage(e.target, 0, 0, canvas.width, canvas.height);
-              $target.attr("poster", canvas.toDataURL("image/png"));
-              $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png") || '/static/imgs/test.png');
-            });
-          }
-          self.playVidoe();
+          // for (const val of self.videoId) {
+          //   const $videos = $(`.videoTag-${val}`);
+          //   $videos.on("loadeddata", function (e) {
+          //     const $target = $(e.target);
+          //     const canvas = document.createElement("canvas");
+          //     canvas.width = 335;
+          //     canvas.height = 175;
+          //     canvas.getContext('2d').drawImage(e.target, 0, 0, canvas.width, canvas.height);
+          //     $target.attr("poster", canvas.toDataURL("image/png"));
+          //     $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png") || '/static/imgs/test.png');
+          //   });
+          // }
+          // self.playVidoe();
           setInterval(function () {
             $('#masonry').masonry('reload');
           }, 100);
@@ -200,12 +206,22 @@ import "../css/style.scss";
 
     // 点击查看大图
     previewPic() {
-      $('.preview').on('tap', '.item img', (e) => {
-        const $target = $(e.target).parents('.item');
-        if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) return;
-        if ($target.hasClass('video')) return;
+      const self = this;
+      $('.preview').on('tap', ':not(".btnLike")', (e) => {
+        const $target = $(e.target);
+        if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) {
+          return;
+        }
+        const $Item = $target.parents('.item');
+        // 如果是视屏，则播放视频
+        if ($Item.hasClass('video')){
+          const videoPath = $Item.attr('data-videoPath');
+          const imgPath = $Item.attr('videoPath');
+          self.playVidoe(videoPath, $Item.data('id'));
+          return;
+        }
         const imgs = [];
-        const urls = $target.parents('.preview').find('.item').map((idx, item) => {
+        const urls = $Item.parents('.preview').find('.item').map((idx, item) => {
           const $current = $(item);
           const url = $current.attr('data-src');
           if (url) {
@@ -215,7 +231,7 @@ import "../css/style.scss";
         });
         if (typeof wx !== 'undefined') {
           wx.previewImage({
-            current: $target.data('src') || $target.attr('src'),
+            current: $Item.data('src') || $Item.attr('src'),
             urls: imgs
           });
         }
@@ -225,12 +241,6 @@ import "../css/style.scss";
     wxJssdk() {
       const api = this.api.WX_CONFIG;
       if (/MicroMessenger/i.test(navigator.userAgent)) {
-
-        // document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-        //   WeixinJSBridge.call('hideToolbar');
-        // });
-
-
         $.getScript("https://res.wx.qq.com/open/js/jweixin-1.0.0.js", function callback() {
           $.get(api, {
             path: window.location.href.split('#')[0]
@@ -238,7 +248,7 @@ import "../css/style.scss";
             if (res.ret === 0) {
               const data = res.data;
               wx.config({
-                debug: true,
+                debug: false,
                 appId: data.appId,
                 timestamp: data.timestamp,
                 nonceStr: data.nonceStr,
@@ -327,32 +337,63 @@ import "../css/style.scss";
       });
     }
 
-    playVidoe() {
+    playVidoe(video, id) {
+      var u = navigator.userAgent;
+      var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;
+      const $videoContainer = $('.videoContainer');
+      const $video = $videoContainer.find('video');
+      const $canvas = $videoContainer.find('canvas')
+      $video.attr('src', video);
+      // $video.hide();
+      const oLiveCanvas2D = $canvas[0].getContext('2d');
+      // $videoContainer.find('.close-icon').show();
+      // $videoContainer.show();
+      // console.log(isAndroid);
+      // // if (isAndroid) {
+      //   console.log(isAndroid);
+      //   const $newVideo = $('.videoContainer video');
+      //   let bLiveVideoTimer = null;
+      //   setTimeout(() => {
+      //     $newVideo[0].play();
+      //   }, 500);
+      // $video[0].addEventListener('timeupdate', function () {
+      //     console.log('playing', isAndroid);
+      //     $videoContainer.find('.close-icon').hide();
+      //     bLiveVideoTimer = setInterval(function () {
+      //       console.log('canvas');
+            
+      //       oLiveCanvas2D.drawImage($video[0], 0, 0, 640, 320);
+
+      //     }, 20);
+
+      //   }, false);
+
+
+      //   return;
+      // }
+
+
+
+
+
+
+
+      $videoContainer.find('.close-icon').show();
+      $videoContainer.show();
+      const $newVideo = $('.videoContainer video');
       const $playBtn = $('.scroller');
-      const $videos = $('.item video');
-      $videos.on('playing', e => {
-        const $target = $(e.target);
-        $target.closest('.item').find('.poster').hide();
-        $target.closest('.item').find('.pick-info').hide();
+      $newVideo.on('playing', e => {
+        $videoContainer.find('.close-icon').hide();
       });
-      $videos.on('ended', e => {
-        const $target = $(e.target);
-        $target.closest('.item').find('.poster').show();
-        $target.closest('.item').find('.pick-info').show();
-      });
-      $videos.on('pause', e => {
-        const $target = $(e.target);
-        $target.closest('.item').find('.poster').show();
-        $target.closest('.item').find('.pick-info').show();
-        $target.closest('.item').find('.poster i').addClass('icon-play').removeClass('icon-loading1');
-      });
-      $playBtn.on('tap', '.poster', (e) => {
+      // 快熟切换播放视频还未加载导致报错
+      setTimeout(() => {
+        $newVideo[0].play();
+      }, 500);
+      $videoContainer.on('tap', (e) => {
+        e.target.pause();
         e.preventDefault();
-        const $target = $(e.target);
-        const $parentItem = $target.closest('.item').find('video');
-        const $icon = $target.closest('.item').find('.poster i');
-        $icon.removeClass('icon-play').addClass('icon-loading1');
-        $parentItem[0].play();
+        $videoContainer.hide();
+        const $video = $videoContainer.find('video');
       });
     }
 

@@ -1,6 +1,7 @@
 // var vConsole = new VConsole();
 $.fn.UploadImg = function (o) {
   const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
+  const $progress = $('.progress');
   this.change(function () {
     const file = this.files['0'];
     const size = file.size;
@@ -28,8 +29,6 @@ $.fn.UploadImg = function (o) {
       var formData = new FormData();
       o.showTips('正在上传文件...');
       formData.append('media', file);
-      console.log(flag);
-      
       formData.append('mediaType', flag ? 1 : 2);
       $.ajax({
         url: o.url,
@@ -37,12 +36,19 @@ $.fn.UploadImg = function (o) {
         data: formData,
         contentType: false,
         processData: false,
+        beforeSend: () => {
+          $progress.show().animate({ 'width': '600px' }, 1500, 'linear').animate({ 'width': '700px' }, 10000, 'linear');
+        },
         success: (res) => {
           o.showTips('上传成功');
+          $progress.animate().stop().animate({'width': '750px' }, 500, 'linear', () => {
+            $progress.hide().css('width', '3px');
+          });
           o.success(res);
         },
         error: (res) => {
           o.showTips('上传失败');
+          $progress.hide().css('width', '3px')
           o.error(res)
         }
       });
