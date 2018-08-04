@@ -7,7 +7,6 @@
   <meta name="full-screen" content="yes">
   <meta name="browsermode" content="application">
   <title>Photo Moments</title>
-  <link href="/static/js/video.css" rel="stylesheet">
   <script>
 
   var b = parseInt(window.screen.width),
@@ -16,7 +15,7 @@
     var d = parseFloat(RegExp.$1);
     document.write(d > 2 ? '<meta name="viewport" content="width=750, user-scalable=no,maximum-scale = 1">' : '<meta name="viewport" content="width=750, target-densitydpi=device-dpi">');
   } else document.write('<meta name="viewport" content="width=750, user-scalable=no,minimum-scale = ' + c + ',maximum-scale = 1,target-densitydpi=device-dpi">');
-  console.log('idnex.html');
+  
   
   </script>
 </head>
@@ -42,15 +41,13 @@
     </div>
 
     <!-- 首页 -->
-    <div id="page-home" class="page-home page active">
-      <div id="masonry" class="masonry scroller preview">
-        <!-- <video id="example_video_1" 
-        class="video-js vjs-default-skin" 
-        controls
-        poster="http://video-js.zencoder.com/oceans-clip.png"
-        width="335">
-          <source src="//vjs.zencdn.net/v/oceans.mp4" type="video/mp4"></source>
-        </video> -->
+    <div id="page-home" class="page-home scroller page active">
+      <!-- banner 位 -->
+      <div class="banner slider-wrap" id="banner">
+      </div>
+
+
+      <div id="masonry" class="masonry preview">
       </div>
     </div>
 
@@ -111,18 +108,19 @@
           <i class="iconfont icon-loading"></i>
         </div>
     </div>
+
+    <!-- 进度条 -->
     <div class="progress"></div>
 
 
   </div>
 
   <!-- s = 依赖 -->
-  <!-- <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
   <script type="text/javascript" src="/static/js/zepto.min.js"></script>
   <script type="text/javascript" src="/static/js/exif.min.js"></script>
   <script type="text/javascript" src="/static/js/mobileBUGFix.mini.js"></script>
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-  <script type="text/javascript" src="/static/js/video.js"></script>
+  <script type="text/javascript" src="/static/js/banner.js"></script>
   <script type="text/javascript" src="/static/js/upload.js"></script>
   <script type="text/javascript" src="/static/js/jquery.masonry.min.js"></script>
   <!-- e = 依赖 -->

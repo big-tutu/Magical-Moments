@@ -1,12 +1,8 @@
 
-import VConsole from 'vconsole/dist/vconsole.min.js';
-let vConsole = new VConsole();
+// import VConsole from 'vconsole/dist/vconsole.min.js';
+// let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
-  const getUrl = function () {
-    var rootPath = location.origin + location.pathname;
-    return rootPath;
-  }
   class App {
     constructor() {
       this.currentList = 'home';
@@ -24,12 +20,13 @@ import "../css/style.scss";
     }
     init() {
       this.wxJssdk();
+
       this.main();
+      this.renderBanner();
       this.prefix();
       this.waterfallsFlow();
       this.previewPic();
       this.handleLike();
-      // this.playVidoe();
       this.showTip();
       this.scrollLoadMore();
       this.getList({
@@ -39,7 +36,6 @@ import "../css/style.scss";
       }, 'home');
     }
     main() {
-      // $('videoContainer video')[0].play();
       $('.btn-upload').on('tap', e => {
         e.preventDefault();
         $('#filedata').trigger('click');
@@ -53,6 +49,12 @@ import "../css/style.scss";
       $('.btn-rank').on('tap', e => {
         e.preventDefault();
         this.page('rank');
+      });
+
+      $(window).on('resize', () => {
+        setInterval(function () {
+          $('#masonry').masonry('reload');
+        }, 100);
       });
 
 
@@ -97,7 +99,7 @@ import "../css/style.scss";
     page(active) {
       const $activePage = $("#page-" + active);
       $activePage.addClass("active").siblings(".page").removeClass("active");
-      $activePage.find('.scroller').html('');
+      $activePage.find('.preview').html('');
       this.getList({
         page: 1,
         count: active === 'home' ? 20 : 10,
@@ -135,7 +137,6 @@ import "../css/style.scss";
           };
           self.hasMore = data.length === 20;
           const template = data.map(list => {
-            // const flag = patt.test(list.path);
             if (list.mediaType === 1) {
               return `<div class="item masonry-brick" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <img src="${list.path}">
@@ -148,25 +149,6 @@ import "../css/style.scss";
                 </div>
               </div>`
             } else {
-              // self.videoId.push(list.id);
-              // return `<div class="item video masonry-brick" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}">
-              //   <video
-              //   autoplay
-              //   class="video-active videoTag-${list.id}"
-              //   src="${list.path}"
-              //   ></video>
-              //   <div class="poster">
-              //     <img src="/static/imgs/test.png">
-              //     <i class="iconfont icon-play"></i>
-              //   </div>
-              //   <div class="pick-info">
-              //     <i class="type iconfont icon-shipinx"></i>
-              //     <span class="btnLike">
-              //       <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
-              //       <b>${list.voteNum}</b>
-              //     </span>
-              //   </div>
-              // </div>`
               return `<div class="item video masonry-brick" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}" data-videoPath="${list.path}">
                 <img src="${list.videoCover}">
                 <div class="pick-info">
@@ -180,21 +162,7 @@ import "../css/style.scss";
             }
           });
 
-          $(`#page-${page}`).find('.scroller').append(template.join(''));
-          // 获取第一帧作为封面
-          // for (const val of self.videoId) {
-          //   const $videos = $(`.videoTag-${val}`);
-          //   $videos.on("loadeddata", function (e) {
-          //     const $target = $(e.target);
-          //     const canvas = document.createElement("canvas");
-          //     canvas.width = 335;
-          //     canvas.height = 175;
-          //     canvas.getContext('2d').drawImage(e.target, 0, 0, canvas.width, canvas.height);
-          //     $target.attr("poster", canvas.toDataURL("image/png"));
-          //     $target.siblings('.poster').find('img').attr('src', canvas.toDataURL("image/png") || '/static/imgs/test.png');
-          //   });
-          // }
-          // self.playVidoe();
+          $(`#page-${page}`).find('.preview').append(template.join(''));
           setInterval(function () {
             $('#masonry').masonry('reload');
           }, 100);
@@ -208,6 +176,7 @@ import "../css/style.scss";
     previewPic() {
       const self = this;
       $('.preview').on('tap', ':not(".btnLike")', (e) => {
+        e.preventDefault();
         const $target = $(e.target);
         if ($target.hasClass('btnLike') || $target.parents('.btnLike').length) {
           return;
@@ -217,13 +186,9 @@ import "../css/style.scss";
         if ($Item.hasClass('video')){
           const videoPath = $Item.attr('data-videoPath');
           const imgPath = $Item.attr('videoPath');
-          // if (self.isAndroid) {
-          //   self.playVidoeAndroid($Item);
-          // } else {
-          //   // self.playVidoeIOS(videoPath, $Item.data('id'));
-          // }
           self.playVidoeIOS(videoPath, $Item.data('id'));
-          return;
+          
+          return false;
         }
         const imgs = [];
         const urls = $Item.parents('.preview').find('.item').map((idx, item) => {
@@ -239,6 +204,7 @@ import "../css/style.scss";
             current: $Item.data('src') || $Item.attr('src'),
             urls: imgs
           });
+          return false;
         }
       });
     }
@@ -347,7 +313,7 @@ import "../css/style.scss";
     }
 
     // paly in ios
-    playVidoeIOS(video, id) {
+    playVidoeIOS(video, id, callback) {
       // console.log(video);
       
       const $videoContainer = $('.videoContainer');
@@ -363,10 +329,7 @@ import "../css/style.scss";
       });
       if (this.isAndroid) {
         $newVideo[0].play();
-        // $newVideo[0].pause();
         $newVideo[0].addEventListener("x5videoexitfullscreen", function () {
-
-        // alert("player x5videoexitfullscreen");
           $videoContainer.find('video').replaceWith(`
           <video 
             id="j-video"
@@ -381,6 +344,9 @@ import "../css/style.scss";
             你的浏览器不支持H5播放器
           </video>`);
           $videoContainer.removeClass('active');
+          setInterval(function () {
+            $('#masonry').masonry('reload');
+          }, 100);
         });
       }
       // 快熟切换播放视频还未加载导致报错
@@ -400,35 +366,7 @@ import "../css/style.scss";
         }
       });
     }
-
-    playVidoeAndroid(video) {
-      // console.log('playVidoeAndroid',video);
-      const $video = video.find('video');
-      // const $videoContainer = $('.videoContainer');
-      // $videoContainer.find('video').hide();
-      // $videoContainer.find('.close-icon').show();
-      // $videoContainer.css('opacity', 0).show();
-      // const $video = $('.videoContainer video');
-      // const myVideo = $video[0];
-      $video[0].play();
-      $video[0].pause();
-      // $video.hide();
-      $video.on('playing', e => {
-        // $videoContainer.find('.close-icon').hide();
-        // $videoContainer.hide();
-        $video[0].play();
-      });
-      // myVideo.addEventListener("x5videoenterfullscreen", function () {
-
-      //   // alert("player enterfullscreen");
-
-      // });
-      // myVideo.addEventListener("x5videoexitfullscreen", function () {
-
-      //   // alert("player x5videoexitfullscreen");
-
-      // });
-    }
+    
 
 
 
@@ -439,12 +377,16 @@ import "../css/style.scss";
       $(document).ready(function (e) {
         $(window).on('orientationchange', function (e) {
           var htmlBox = $('body');
+          console.log('orientationchange');
+          
           if (window.orientation == 180 || window.orientation == 0) {
             $(".turnBox").remove();
           }
           if (window.orientation == 90 || window.orientation == -90) {
             const $videoContainer = $('.videoContainer');
             if ($videoContainer.hasClass('active')) {
+              console.log('what');
+              
               return;
             }
             $("body").append('<aside class="turnBox"><img src="/static/imgs/turn.png" class="turn"><p>请将手机调至竖屏状态，获得最佳浏览体验</p></aside>');
@@ -502,6 +444,53 @@ import "../css/style.scss";
         });
       }, 1400);
     }
+
+    renderBanner () {
+      const bannerList = [
+        {
+          imgUrl: '/static/imgs/test.png',
+          id: 1
+        },
+        {
+          imgUrl: '/static/imgs/test.png',
+          id: 2
+        },
+        {
+          imgUrl: '/static/imgs/test.png',
+          id: 3
+        }
+      ];
+      const sliders = bannerList.map(slide => {
+        return `<li id="${slide.id}" class="slider-item openParam" data-param="">
+          <div class="img-wrap">
+              <img class="banner-image" src="${slide.imgUrl}">
+          </div>
+        </li>`
+      });
+      console.log('renderbanner');
+      
+      $("#banner").html('');
+      $("#banner").html(`<ul class="slider-list">${sliders.join('')}</ul>`);
+      $("#banner").slider({
+        "autoScroll": true,
+        "infinite": true
+      });
+    }
+
+
+    bannerList (bannerList) {
+      const sliders = bannerList.map(slide => {
+        return `<li id="${slide.id}" class="slider-item openParam" data-param="">
+          <div class="img-wrap">
+              <img class="banner-image" src="${slide.imgPath}">
+          </div>
+        </li>`
+      });
+
+      return `<ul class="slider-list">${sliders.join('')}</ul>`;
+    }
+
+
   }
 
   $(function () {

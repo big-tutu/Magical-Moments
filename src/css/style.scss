@@ -118,6 +118,7 @@ aside.turnBox p { color: #fff;}
     display: block;
   }
   .page-home {
+    padding-top: 358px;
     .item {
       width: 335px;
       // width: 50%;
@@ -260,6 +261,7 @@ aside.turnBox p { color: #fff;}
     bottom: 0;
     color: #fff;
     padding-top: 30px;
+    border-radius: 0 0 12px 12px;
     background-image: linear-gradient(-180deg, rgba(67, 70, 74, 0.1) 0%, rgba(40, 42, 45, 1) 100%);
     >i {
       float: left;
@@ -431,10 +433,75 @@ aside.turnBox p { color: #fff;}
     height: 5px;
     width: 2px;
     background-color: #04be02;
-    // display: none;
+    display: none;
   }
 
-.banner {
-  height: 300px;
-  background-color: red;
+// banner
+#banner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 338px;
+  width: 100%;
+  overflow: hidden;
+  .slider-wrap {
+    width: 100%;
+    position: relative;
+  }
+
+  .slider-list {
+    display: -webkit-box;
+    width: 100%;
+    height: 100%;
+  }
+
+  .slider-item {
+    width: 100%;
+    list-style: none;
+  }
+
+  .slider-item a {
+    display: block;
+  }
+
+  .slider-item img {
+    width: 100%;
+  }
+
+  .transitionable {
+    -webkit-transition: all 0.3s ease-in-out;
+  }
+
+  .slider-page {
+    // width: 100%;
+    position: absolute;
+    bottom: 5px;
+    right: 50px;
+    text-align: center;
+  }
+
+  .slider-page ul {
+    display: inline-block;
+    // text-align: center;
+  }
+
+  .slider-page ul li {
+    display: inline-block;
+    vertical-align: top;
+    width: 20px;
+    height: 6px;
+    margin: 0 5px;
+    // border-radius: 50%;
+    background: rgba(255, 255, 255, .5)
+  }
+
+  .slider-page ul li.active {
+    background: #fff
+  }
+
+  .img-wrap {
+    width: 100%;
+    height: 100%;
+  // background: #fafafa url("../images/loading.gif") no-repeat center center;
+  }
 }
