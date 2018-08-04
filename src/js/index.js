@@ -12,6 +12,7 @@ import "../css/style.scss";
       this.currentList = 'home';
       this.loading = false;
       this.hasMore = true;
+      this.isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
       this.currentPage = 1;
       this.api = {
         LIST: '/api/media/list',
@@ -167,7 +168,6 @@ import "../css/style.scss";
               //   </div>
               // </div>`
               return `<div class="item video masonry-brick" data-id="${list.id}" data-love="${list.isVoted === 0 ? 1 : 2}" data-videoPath="${list.path}">
-                
                 <img src="${list.videoCover}">
                 <div class="pick-info">
                   <i class="type iconfont icon-shipinx"></i>
@@ -217,7 +217,12 @@ import "../css/style.scss";
         if ($Item.hasClass('video')){
           const videoPath = $Item.attr('data-videoPath');
           const imgPath = $Item.attr('videoPath');
-          self.playVidoe(videoPath, $Item.data('id'));
+          // if (self.isAndroid) {
+          //   self.playVidoeAndroid($Item);
+          // } else {
+          //   // self.playVidoeIOS(videoPath, $Item.data('id'));
+          // }
+          self.playVidoeIOS(videoPath, $Item.data('id'));
           return;
         }
         const imgs = [];
@@ -303,6 +308,7 @@ import "../css/style.scss";
       const url = this.api.MAKE_LOVE;
       $('.preview').on('tap', '.btnLike', function (e) {
         const _this = $(this).parents('.item');
+        const current = _this.closest('.page-rank').length === 1;
         const $hint = $('#hint');
         if (_this.hasClass('disabled')) return;
 
@@ -327,6 +333,9 @@ import "../css/style.scss";
             _this.attr('data-love', 1);
             self.showTost('已取消点赞');
           }
+          if (current) {
+            this.page('rank');
+          }
         } else {
           self.showTost(res && res.msg || '网络错误请稍后重试');
         }
@@ -337,65 +346,92 @@ import "../css/style.scss";
       });
     }
 
-    playVidoe(video, id) {
-      var u = navigator.userAgent;
-      var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;
+    // paly in ios
+    playVidoeIOS(video, id) {
+      // console.log(video);
+      
       const $videoContainer = $('.videoContainer');
       const $video = $videoContainer.find('video');
-      const $canvas = $videoContainer.find('canvas')
       $video.attr('src', video);
-      // $video.hide();
-      const oLiveCanvas2D = $canvas[0].getContext('2d');
-      // $videoContainer.find('.close-icon').show();
-      // $videoContainer.show();
-      // console.log(isAndroid);
-      // // if (isAndroid) {
-      //   console.log(isAndroid);
-      //   const $newVideo = $('.videoContainer video');
-      //   let bLiveVideoTimer = null;
-      //   setTimeout(() => {
-      //     $newVideo[0].play();
-      //   }, 500);
-      // $video[0].addEventListener('timeupdate', function () {
-      //     console.log('playing', isAndroid);
-      //     $videoContainer.find('.close-icon').hide();
-      //     bLiveVideoTimer = setInterval(function () {
-      //       console.log('canvas');
-            
-      //       oLiveCanvas2D.drawImage($video[0], 0, 0, 640, 320);
-
-      //     }, 20);
-
-      //   }, false);
-
-
-      //   return;
-      // }
-
-
-
-
-
-
-
       $videoContainer.find('.close-icon').show();
-      $videoContainer.show();
+      $videoContainer.addClass('active');
       const $newVideo = $('.videoContainer video');
       const $playBtn = $('.scroller');
       $newVideo.on('playing', e => {
         $videoContainer.find('.close-icon').hide();
+        $videoContainer.css('opacity', 1);
       });
+      if (this.isAndroid) {
+        $newVideo[0].play();
+        // $newVideo[0].pause();
+        $newVideo[0].addEventListener("x5videoexitfullscreen", function () {
+
+        // alert("player x5videoexitfullscreen");
+          $videoContainer.find('video').replaceWith(`
+          <video 
+            id="j-video"
+            class="wrapper"
+            playsinline 
+            webkit-playsinline
+            x-webkit-airplay="allow"
+            preload="auto"
+            x5-video-player-type="h5"
+            x5-video-player-fullscreen="true"
+          >
+            你的浏览器不支持H5播放器
+          </video>`);
+          $videoContainer.removeClass('active');
+        });
+      }
       // 快熟切换播放视频还未加载导致报错
       setTimeout(() => {
         $newVideo[0].play();
       }, 500);
       $videoContainer.on('tap', (e) => {
-        e.target.pause();
-        e.preventDefault();
-        $videoContainer.hide();
-        const $video = $videoContainer.find('video');
+        const $target = $(e.target);
+        if ($target.hasClass('videoContainer')) {
+          e.preventDefault();
+          $target.find('video')[0].pause();
+          $videoContainer.removeClass('active');
+        } else {
+          e.preventDefault();
+          e.target.pause();
+          $videoContainer.removeClass('active');
+        }
       });
     }
+
+    playVidoeAndroid(video) {
+      // console.log('playVidoeAndroid',video);
+      const $video = video.find('video');
+      // const $videoContainer = $('.videoContainer');
+      // $videoContainer.find('video').hide();
+      // $videoContainer.find('.close-icon').show();
+      // $videoContainer.css('opacity', 0).show();
+      // const $video = $('.videoContainer video');
+      // const myVideo = $video[0];
+      $video[0].play();
+      $video[0].pause();
+      // $video.hide();
+      $video.on('playing', e => {
+        // $videoContainer.find('.close-icon').hide();
+        // $videoContainer.hide();
+        $video[0].play();
+      });
+      // myVideo.addEventListener("x5videoenterfullscreen", function () {
+
+      //   // alert("player enterfullscreen");
+
+      // });
+      // myVideo.addEventListener("x5videoexitfullscreen", function () {
+
+      //   // alert("player x5videoexitfullscreen");
+
+      // });
+    }
+
+
+
 
 
     // 解决滚动穿透问题
@@ -407,6 +443,10 @@ import "../css/style.scss";
             $(".turnBox").remove();
           }
           if (window.orientation == 90 || window.orientation == -90) {
+            const $videoContainer = $('.videoContainer');
+            if ($videoContainer.hasClass('active')) {
+              return;
+            }
             $("body").append('<aside class="turnBox"><img src="/static/imgs/turn.png" class="turn"><p>请将手机调至竖屏状态，获得最佳浏览体验</p></aside>');
           }
         });
