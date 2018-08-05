@@ -15,16 +15,36 @@
         <span>Photo Moments</span>
       </a>
       <div class="user-info">
-
-        <a class="c-avatar" href="#" id="dropdwonMenuAvatar" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          <span>Admin</span>
-          <img class="c-avatar__img" src="/static/imgs/test.png" alt="User's Profile Picture">
-        </a>
-      
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdwonMenuAvatar">
-          <a class="dropdown-item logout" href="#">退出</a>
-        </div>
+        <ul>
+          <li class="nav-item admin">
+            <a class="c-avatar j-handle-event">
+              <span>Admin</span>
+              <img class="c-avatar__img" src="/static/imgs/test.png" alt="User's Profile Picture">
+            </a>
+            <ul class="options">
+              <li>
+                <a class="dropdown-item logout" href="http://photo-moments.yxking.xyz/admin/logout">退出</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item modle-seting">
+            <a class="j-handle-event">场景<i class="iconfont icon-xiala"></i></a>
+            <ul class="options">
+              <li data-mode="1">
+                <a class="j-mode-item">
+                  <i class="iconfont icon-iconset0126"></i>
+                  <span>仅图片</span>
+                </a>
+              </li>
+              <li data-mode="2">
+                <a class="j-mode-item">
+                  <i class="iconfont icon-iconset0126"></i>
+                  <span>图片和视频</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
     </header>
 
@@ -34,8 +54,7 @@
     <div class="content">
       <div class="list">
       <ul>
-        <!-- 展示的项d -->
-  
+        <!-- 展示的项 -->
       </ul>
       </div>
     </div>

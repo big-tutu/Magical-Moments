@@ -6,6 +6,9 @@ import "../css/style.scss";
   class App {
     constructor() {
       this.currentList = 'home';
+      this.uploadType = {
+        imgs: ''
+      }
       this.loading = false;
       this.hasMore = true;
       this.isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
@@ -18,9 +21,22 @@ import "../css/style.scss";
       };
       this.init();
     }
-    init() {
-      this.wxJssdk();
+    async init() {
+      await $.get('/api/getMode', res => {
+        if (res.ret === 0) {
+          const mode = res.data.mode;
+          this.mode = mode;
+          if (mode === 1) {
+            $('#filedata').attr('accept', 'image/*');
+          }
+        } else {
+          this.showTost('网络出现故障');
+        }
+      });
 
+
+
+      this.wxJssdk();
       this.main();
       this.renderBanner();
       this.prefix();
@@ -43,6 +59,7 @@ import "../css/style.scss";
 
       $('.btn-home').on('tap', e => {
         e.preventDefault();
+        window.location.href = window.location.href;
         this.page('home');
       });
 
@@ -348,6 +365,13 @@ import "../css/style.scss";
             $('#masonry').masonry('reload');
           }, 100);
         });
+      } else {
+        $newVideo[0].addEventListener('webkitendfullscreen', function () {
+          $videoContainer.removeClass('active');
+          setInterval(function () {
+            $('#masonry').masonry('reload');
+          }, 100);
+        });
       }
       // 快熟切换播放视频还未加载导致报错
       setTimeout(() => {
@@ -377,16 +401,12 @@ import "../css/style.scss";
       $(document).ready(function (e) {
         $(window).on('orientationchange', function (e) {
           var htmlBox = $('body');
-          console.log('orientationchange');
-          
           if (window.orientation == 180 || window.orientation == 0) {
             $(".turnBox").remove();
           }
           if (window.orientation == 90 || window.orientation == -90) {
             const $videoContainer = $('.videoContainer');
             if ($videoContainer.hasClass('active')) {
-              console.log('what');
-              
               return;
             }
             $("body").append('<aside class="turnBox"><img src="/static/imgs/turn.png" class="turn"><p>请将手机调至竖屏状态，获得最佳浏览体验</p></aside>');
@@ -413,7 +433,7 @@ import "../css/style.scss";
 
     scrollLoadMore () {
       const self = this;
-      $('#masonry').on('scroll', function () {
+      $('#page-home').on('scroll', function () {
         const $target = $(this);
         const contentH = parseInt($target.find('.item:last').css('top')) + parseInt($target.find('.item:last').css('height'));
         const scrollH = $target.scrollTop();
@@ -467,8 +487,6 @@ import "../css/style.scss";
           </div>
         </li>`
       });
-      console.log('renderbanner');
-      
       $("#banner").html('');
       $("#banner").html(`<ul class="slider-list">${sliders.join('')}</ul>`);
       $("#banner").slider({

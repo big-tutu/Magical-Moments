@@ -1,18 +1,118 @@
 import "../css/admin.scss";
 
+
+// 确认弹窗
+const dialog = {
+  open (options) {
+    $('body').css('overflow', 'hidden').append(
+      `<div id="dialog" class="dialog-mask">
+        <div class="content-layout">
+          <div class="dialog-title">${options.title}</div>
+          <div class="dialog-content"  style="width:${options.contentArea[0] || '400px'}; height:${options.contentArea[1] || 'auto'}; overflow: auto">
+            ${options.contentText}
+          </div>
+          <div class="dialog-footer">
+            <button class="dialog-cancel">${options.cancelText || '取消'}</button>
+            <button class="dialog-ok">${options.okText || '确定'}</button>
+          </div>
+        </div>
+      </div>`
+    );
+    this.onClick(options);
+  },
+
+  onClick(options) {
+    $("#dialog").on('click', e => {
+      const $target = $(e.target);
+      if ($target.hasClass('dialog-ok')) {
+        this.onOk(options);
+      } else if ($target.hasClass('dialog-cancel')) {
+        this.onCancel(options);
+      } else if ($target.hasClass('dialog-mask')) {
+        if (options.maskClose) {
+          this.close();
+        }
+      }
+    });
+  },
+  onOk (options) {
+    options.onOk && options.onOk();
+  },
+  onCancel (options) {
+    options.onCancel && options.onCancel();
+    $('body').css('overflow', 'auto').find('#dialog').remove();
+  },
+  close() {
+    $('body').css('overflow', 'auto').find('#dialog').remove();
+  }
+};
+
+const toast = {
+  success (text) {
+    $('body').append(`<div class="toast toast-success"><p>${text}</p></div>`);
+    $('.toast').addClass('toast-animate');
+    setTimeout(() => {
+      $('.toast').remove();
+    }, 1000);
+  },
+  error () {
+    $('body').append(`<div class="toast toast-error"><p>${text}</p></div>`);
+    $('.toast').addClass('toast-animate');
+    setTimeout(() => {
+      $('.toast').remove();
+    }, 1000);
+  },
+  warning () {
+    $('body').append(`<div class="toast toast-warning"><p>${text}</p></div>`);
+    $('.toast').addClass('toast-animate');
+    setTimeout(() => {
+      $('.toast').remove();
+    }, 1000);
+  }
+};
+
+
+
+
+
+
 (function (win, $) {
   class Admin {
     constructor () {
       this.currentPage = 1;
       this.totalCount = null;
+      this.mode = 1;
       this.init();
     }
-    init () {
+    async init () {
       // this.pagination();
-      this.menu();
+      await $.get('/api/getMode', res => {
+        if (res.ret === 0) {
+          const mode = res.data.mode;
+          this.mode = mode;
+          $(`.options li[data-mode="${mode}"]`).find('a').addClass('active');
+        } else {
+          toast.error('网络错误，获取业务模式失败');
+        }
+      });
+      this.bindEvents();
       this.getList();
       this.deleteItem();
       this.previePic();
+      this.modeSeting();
+    }
+
+    bindEvents () {
+      $('.j-handle-event').click(e => {
+        const $parent = $(e.target).closest('.nav-item');
+        const $currentUl = $parent.find('ul.options');
+        if ($currentUl.hasClass('show')) {
+          $currentUl.slideUp().removeClass('show');
+          return;
+        }
+        $parent.siblings().find('ul.options').slideUp().removeClass('show');
+        $currentUl.slideDown().addClass('show');
+      });
     }
 
     getList (ops = {}) {
@@ -69,7 +169,7 @@ import "../css/admin.scss";
             totalData: self.totalCount,
           });
         } else {
-          alert(res.msg || '网络错误，稍后重试');
+          toast.error(res.msg || '网络错误，稍后重试');
         }
       })
     }
@@ -104,40 +204,37 @@ import "../css/admin.scss";
       );
     }
 
-    // // 唤起菜单
-    menu () {
-      const $menu = $('.dropdown-menu');
-      $('.user-info').click(e => {
-        if ($(e.target).hasClass('logout')) {
-          window.location.href = 'http://photo-moments.yxking.xyz/admin/logout';
-          return;
-        } 
-        if ($menu.hasClass('active')) {
-          $menu.removeClass('active');
-        } else {
-          $menu.addClass('active');
-        }
-      });
-    }
 
     // 删除
     deleteItem () {
       const self = this;
       $('.content').on('click', '.delete', e => {
         const id = $(e.target).closest('.item').data('id');
-        $.post(`/api/media/${id}/delete`,res => {
-          if (res.ret === 0) {
-            const sendData = {
-              count: 20,
-              page: this.currentPage,
-              patten: 1
-            };
-            self.getList(sendData);
-          } else {
-            alert(res && res.msg || '网络错误，稍后重试');
+        dialog.open({
+          contentArea: ['280px'],
+          title: '确认删除',
+          contentText: '确认要删除该项吗？',
+          maskClose: true,
+          onOk () {
+            $.post(`/api/media/${id}/delete`, res => {
+              if (res.ret === 0) {
+                const sendData = {
+                  count: 20,
+                  page: this.currentPage,
+                  patten: 1
+                };
+                self.getList(sendData);
+                dialog.close();
+                toast.success('删除成功');
+              } else {
+                toast.error(res && res.msg || '网络错误，稍后重试');
+              }
+            });
+          },
+          onCancel () {
           }
         });
-      })
+      });
     }
 
 
@@ -145,8 +242,6 @@ import "../css/admin.scss";
     // 点击查看大图
     previePic () {
       $('.content').on('click', 'img', e => {
-        console.log(e);
-        
         const $target = $(e.target);
         const url = $target.attr('src');
         $('body').append(`<div class="mask">
@@ -158,6 +253,47 @@ import "../css/admin.scss";
         $(this).remove();
       })
     }
+
+    // 模式设置
+    modeSeting () {
+      const self = this;
+      $('.modle-seting ul.options').on('click', '.j-mode-item', (e) => {
+        const $target = $(e.target);
+        const $li = $target.closest('li');
+        const mode = $li.data('mode');
+        if (mode === self.mode) {
+          return;
+        }
+        dialog.open({
+          title: '确认修改模式',
+          contentArea: ['280px'],
+          maskClose: true,
+          contentText: `确认将模式修改为【${mode === 1 ? "仅图片" : '图片和视频'}】模式?`,
+          onOk () {
+            $.post(`/api/updateMode`,{
+              mode
+            }, res => {
+              if (res.ret === 0) {
+                dialog.close();
+                $li.find('a').addClass('active');
+                $li.siblings().find('a').removeClass('active');
+                self.mode = mode;
+                toast.success('模式修改成功');
+                self.getList();
+              } else {
+                toast.error(res.msg || '网络错误，请稍后重试');
+              }
+            });
+          },
+          onCancel () {
+            $li.closest('ul.options').slideToggle();
+            $li.closest('ul.options').toggleClass('show');
+          }
+        });
+      });
+    }
+
+
   }
   $(function () {
     new Admin();
