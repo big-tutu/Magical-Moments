@@ -161,7 +161,7 @@ import "../css/style.scss";
                   <i class="type iconfont icon-tupianx"></i>
                   <span class="btnLike">
                     <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
-                    <b>${list.voteNum}</b>
+                    ${list.voteNum}
                   </span>
                 </div>
               </div>`
@@ -250,9 +250,9 @@ import "../css/style.scss";
               });
               wx.ready(function () {
                 const shareData = {
-                  title: 'Photo moments',
+                  title: 'Photo Moments for FY19 IRM SUMMIT',
                   link: 'http://photo-moments.yxking.xyz/mobile/index',
-                  desc: '这是分享的描述部分',
+                  desc: 'Welcome to the Photo Moments for the FY19 IRM SUMMIT, here you can upload and get real-time photos of the meeting!',
                   imgUrl: 'http://photo-moments.yxking.xyz/static/imgs/default_lecture.png',
                   success: function () {
                     // alert('success');
@@ -316,8 +316,10 @@ import "../css/style.scss";
             _this.attr('data-love', 1);
             self.showTost('已取消点赞');
           }
+
+          // 刷新列表
           if (current) {
-            this.page('rank');
+            self.page('rank');
           }
         } else {
           self.showTost(res && res.msg || '网络错误请稍后重试');
@@ -329,10 +331,8 @@ import "../css/style.scss";
       });
     }
 
-    // paly in ios
+    // paly
     playVidoeIOS(video, id, callback) {
-      // console.log(video);
-      
       const $videoContainer = $('.videoContainer');
       const $video = $videoContainer.find('video');
       $video.attr('src', video);
@@ -468,17 +468,17 @@ import "../css/style.scss";
     renderBanner () {
       const bannerList = [
         {
-          imgUrl: '/static/imgs/test.png',
+          imgUrl: '/static/imgs/banner.png',
           id: 1
         },
-        {
-          imgUrl: '/static/imgs/test.png',
-          id: 2
-        },
-        {
-          imgUrl: '/static/imgs/test.png',
-          id: 3
-        }
+        // {
+        //   imgUrl: '/static/imgs/banner.png',
+        //   id: 2
+        // },
+        // {
+        //   imgUrl: '/static/imgs/banner.png',
+        //   id: 3
+        // }
       ];
       const sliders = bannerList.map(slide => {
         return `<li id="${slide.id}" class="slider-item openParam" data-param="">
