@@ -148,7 +148,7 @@ import "../css/style.scss";
         self.loading = false;
         if (res.ret === 0) {
           const data = res.data.dataList;
-          self.videoId = [];
+          // const data = [];
           if (data.length < 20) {
             this.hasMore = false;
           };
@@ -161,7 +161,7 @@ import "../css/style.scss";
                   <i class="type iconfont icon-tupianx"></i>
                   <span class="btnLike">
                     <i class="iconfont ${list.isVoted === 1 ? 'icon-dianzanedx' : 'icon-dianzanx'}"></i>
-                    ${list.voteNum}
+                    <b>${list.voteNum}</b>
                   </span>
                 </div>
               </div>`
@@ -178,8 +178,22 @@ import "../css/style.scss";
               </div>`
             }
           });
-
+          const $imgWrapper = $(`#page-${page}`).find('.preview');
           $(`#page-${page}`).find('.preview').append(template.join(''));
+          if ($imgWrapper.find('.item') .length === 0) {
+            const winHeight = $(window).height();
+            let curTop = 0;
+            if (page === 'rank') {
+              curTop = (winHeight - 145) / 2;
+            } else {
+              curTop = (winHeight - 530) / 2;
+            }
+            
+            $imgWrapper.html(`<div class="noResult" style="top: ${curTop}px">
+            <img src="/static/imgs/nike_logo.png"/>
+            <p>Start sharing the splendid moments you've captured right now!</p>
+            </div>`);
+          }
           setInterval(function () {
             $('#masonry').masonry('reload');
           }, 100);
