@@ -199,11 +199,11 @@ aside.turnBox p { color: #fff;}
       top: 50%;
       left: 40px;
       // right: 30px;
-      // height: 890px;
-      height: 700;
+      height: 850px;
+      // height: 700px;
       width: 670px;
-      // margin-top: -445px;
-      margin-top: -232px;
+      margin-top: -420px;
+      // margin-top: -232px;
       background: #fff;
       font-size: 20px;
       color: #000;
@@ -223,14 +223,19 @@ aside.turnBox p { color: #fff;}
           h4 {
             font-size: 32px;
           }
+        
         p {
-          margin-bottom: 80px;
+          margin-bottom: 40px;
           font-family: Nike;
           font-size: 28px;
           color: #000000;
           letter-spacing: 0;
           text-align: justify;
           line-height: 40px;
+        }
+        p:nth-child(1) {
+          margin-bottom: 50px;
+
         }
         img {
           width: 100%;

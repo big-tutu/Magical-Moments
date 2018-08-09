@@ -182,15 +182,17 @@ import "../css/style.scss";
           $(`#page-${page}`).find('.preview').append(template.join(''));
           if ($imgWrapper.find('.item') .length === 0) {
             const winHeight = $(window).height();
+            console.log(winHeight);
+            
             let curTop = 0;
             if (page === 'rank') {
-              curTop = (winHeight - 145) / 2;
+              curTop = (winHeight - 200) / 2;
             } else {
-              curTop = (winHeight - 530) / 2;
+              curTop = (winHeight - 550) / 2;
             }
+            console.log(curTop);
             
             $imgWrapper.html(`<div class="noResult" style="top: ${curTop}px">
-            <img src="/static/imgs/nike_logo.png"/>
             <p>Start sharing the splendid moments you've captured right now!</p>
             </div>`);
           }
@@ -267,7 +269,7 @@ import "../css/style.scss";
                   title: 'Photo Moments for FY19 IRM SUMMIT',
                   link: 'http://photo-moments.yxking.xyz/mobile/index',
                   desc: 'Welcome to the Photo Moments for the FY19 IRM SUMMIT, here you can upload and get real-time photos of the meeting!',
-                  imgUrl: 'http://photo-moments.yxking.xyz/static/imgs/default_lecture.png',
+                  imgUrl: 'http://photo-moments.yxking.xyz/static/imgs/avatar.png',
                   success: function () {
                     // alert('success');
                   },
