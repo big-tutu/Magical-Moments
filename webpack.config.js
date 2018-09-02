@@ -43,6 +43,14 @@ module.exports = {
       template: './list.html',
       chunks: ['admin']  // 指定需要引入的js
     }),
+    new HtmlWebpackPlugin({
+      title: 'system_set',
+      inject: true,
+      filename: 'system_set.html',
+      hash: true,
+      template: './system_set.html',
+      chunks: ['admin']  // 指定需要引入的js
+    }),
 
 
     new webpack.NamedModulesPlugin(),
@@ -100,8 +108,9 @@ module.exports = {
     port: 8088,
     hot: true,
     proxy: {
-      '/api': {
-        target: "http://photo-moments.xyz",
+      '/admin/api': {
+        // target: "http://photo-moments.yxking.xyz",
+        target: "http://test.photo-moments.yxking.xyz",
         changeOrigin: true,
       }
     }

@@ -1,6 +1,6 @@
 
-// import VConsole from 'vconsole/dist/vconsole.min.js';
-// let vConsole = new VConsole();
+import VConsole from 'vconsole/dist/vconsole.min.js';
+let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   class App {
@@ -18,6 +18,8 @@ import "../css/style.scss";
         WX_CONFIG: '/api/getConfig',
         UPLOAD: '/api/media/upload',
         MAKE_LOVE: '/api/media/love',
+
+        BANNER_DATA: '/api/banner/data'
       };
       this.init();
     }
@@ -243,7 +245,8 @@ import "../css/style.scss";
     }
 
     wxJssdk() {
-      const api = this.api.WX_CONFIG;
+      const self = this;
+      const api = self.api.WX_CONFIG;
       if (/MicroMessenger/i.test(navigator.userAgent)) {
         $.getScript("https://res.wx.qq.com/open/js/jweixin-1.0.0.js", function callback() {
           $.get(api, {
@@ -261,7 +264,11 @@ import "../css/style.scss";
                   'onMenuShareTimeline',
                   'onMenuShareAppMessage',
                   'hideMenuItems',
-                  'previewImage'
+                  'previewImage',
+                  'chooseImage',
+                  'uploadImage',
+                  'getLocalImgData',
+                  'downloadImage'
                 ]
               });
               wx.ready(function () {
@@ -291,6 +298,7 @@ import "../css/style.scss";
                     'menuItem:openWithSafari',
                   ]
                 });
+
               })
               wx.error(function (res) {
                 // window.console('error', res)
@@ -522,6 +530,27 @@ import "../css/style.scss";
       });
 
       return `<ul class="slider-list">${sliders.join('')}</ul>`;
+    }
+
+
+    // 上传图片
+    uploadMedia (wx) {
+      $('.btn-upload').on('tap', e => {
+        e.preventDefault();
+        console.log(e);
+        console.log(wx);
+        
+        wx.chooseImage({
+          count: 9, // 默认9
+          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+          success: function (res) {
+            var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+            console.log(localIds);
+            
+          }
+        });
+      });
     }
 
 

@@ -51,6 +51,53 @@ input:-webkit-autofill:focus {
   zoom: 1;
 }
 
+.btn {
+  padding: 6px 16px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 16px;
+}
+button {
+  cursor: pointer;
+}
+button:focus {
+  outline: none;
+}
+
+.btn-primary {
+  background-color: #0084ff;
+  border-color: #0084ff;
+  color: #fff;
+}
+.btn-outline {
+  background-color: #fff;
+  border-color: #0084ff;
+  color: #0084ff;
+}
+
+.form-control {
+  display: inline-block;
+  width: 225px;
+  border-radius: 4px;
+  box-shadow: none;
+  border: 1px solid #d2d6de;
+  height: 34px;
+  padding: 6px 12px;
+  color: rgba(0,0,0,.65);
+  background-color: #fff;
+  background-image: none;
+  font-size: 16px;
+}
+
+.hide {
+  display: none;
+}
+.show {
+  display: block;
+}
+
 
 
 HTML, body {
@@ -239,18 +286,30 @@ HTML, body {
     }
   }
   .content {
-    width: 100%;
+    width: calc(100% - 180px);
+    margin-left: 180px;
+    padding: 24px;
+    h2 {
+      font-size: 24px;
+    }
+    .btn-group {
+        // margin-left: 24px;
+        padding: 10px 0;
+        p {
+          margin-top: 10px;
+        }
+      }
     .list {
       width: 100%;
       min-height: 570px;
-      padding: 24px;
+      // padding: 24px;
       ul {
         display: flex;
         flex-wrap: wrap;
         list-style: none;
         justify-content: space-around;
         li {
-          height: 280px;
+          height: 300px;
           width: 300px;
           padding: 10px;
           margin: 20px;
@@ -259,12 +318,22 @@ HTML, body {
             position: relative;
             margin-top: 10px;
             p {
-              line-height: 36px;
+              line-height: 28px;
+            }
+            p.handle {
+              text-align: right;
+              a {
+                margin: 0 7px;
+              }
+            }
+            P:nth-child(3) {
+              a {
+                margin-left: 20px;
+              }
             }
             a {
-              position: absolute;
-              top: 20px;
-              right: 20px;
+              color: #0084ff;
+              cursor: pointer;
             }
           }
           .img {
@@ -403,9 +472,9 @@ HTML, body {
         font-size: 16px;
       }
       button.dialog-cancel {
-        border-color: #d9d9d9;
         background-color: #fff;
         color: #d9d9d9;
+        border: 1px solid #d9d9d9;
       }
       button.dialog-ok {
         border: 1px solid #0084ff;
@@ -421,7 +490,7 @@ HTML, body {
   }
 }
 .toast {
-  position: absolute;
+  position: fixed;
   left: 50%;
   top: -40px;
   transform: translateX(-50%);
@@ -432,6 +501,7 @@ HTML, body {
   animation: toastMoving linear 1s;
   text-align: center;
   border-radius: 6px;
+  z-index: 200;
 }
 .toast.toast-success {
   background-color: #52c41a;
@@ -482,3 +552,102 @@ HTML, body {
         }
     }
 }
+
+
+
+
+// 侧边栏
+.photo-slide {
+  float: left;
+  width: 180px;
+  min-height: 570px;
+  padding: 10px;
+  border: 1px solid #eee;
+  ul {
+    list-style: none;
+    li {
+      margin-top: 20px;
+      a {
+        cursor: pointer;
+        color: rgba(0,0,0,.85);
+      }
+
+    }
+    li.active {
+      > a {
+        color: #0084ff;
+      }
+    }
+  }
+  .level-1 {
+    li {
+      margin-left: 20px;
+    }
+  }
+}
+
+// 系统设置css
+.set-content {
+  .set-page {
+    display: none;
+    min-height: 570px;
+    width: calc(100% - 180px);
+    padding: 24px;
+
+    h2 {
+      font-size: 24px;
+    }
+
+    > div {
+      padding-left: 40px;
+      form {
+        margin-top: 20px;
+        ul {
+          li {
+            margin-bottom: 20px;
+            width: 800px;
+            > label {
+              line-height: 34px;
+              vertical-align: top;
+            }
+            .case {
+              display: inline-block;
+              margin-left: 20px;
+              .tip {
+                margin: 5px 0 0 0;
+                font-size: 12px;
+                color: #a9a9a9;
+              }
+              label {
+                height: 34px;
+                line-height: 34px;
+                span {
+                  margin-left: 10px;
+                  vertical-align: middle;
+                }
+              }
+            }
+
+            .shareImg, .waterMarkImg, .banners {
+              padding: 10px;
+              img {
+                width: 200px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+  }
+  .set-wx_share {
+    display: block;
+  }
+}
+
+// 编辑器
+#editor {
+  width: 500px;
+}
+

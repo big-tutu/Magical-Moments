@@ -8,20 +8,23 @@ import "../css/admin.scss";
       this.init();
     }
     init () {
-      const api = '/api/admin/login';
+      const api = '/admin/api/login';
       $('.submit').click(() => {
         const username = $('input[name="username"]').val().trim();
         const password = $('input[name="password"]').val().trim();
+
+        const corpId = window.location.pathname.split('/')[2];
         if (!username || !password) {
           alert('用户名或密码不能为空');
           return;
         } else {
           $.post(api, {
             username,
-            password
+            password,
+            corpId
           }, res => {
             if (res.ret === 0) {
-              window.location.href = '/admin/index';
+              window.location.href = res.data;
             } else {
               alert(res.msg || '网络发生错误，请稍后重试');
             }
