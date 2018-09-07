@@ -105,11 +105,15 @@ module.exports = {
     contentBase: './dist',
     host: '192.168.1.100',
     // host: '192.168.123.70',
-    port: 8088,
+    port: 2000,
     hot: true,
     proxy: {
       '/admin/api': {
         // target: "http://photo-moments.yxking.xyz",
+        target: "http://test.photo-moments.yxking.xyz",
+        changeOrigin: true,
+      },
+      '/api': {
         target: "http://test.photo-moments.yxking.xyz",
         changeOrigin: true,
       }

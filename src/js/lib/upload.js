@@ -3,64 +3,79 @@ $.fn.UploadImg = function (o) {
   const patt = /.(jpg|jpeg|png|gif|x-png|bmp|pjpeg)/;
   const $progress = $('.progress');
   this.change(function (e) {
-    console.log(e);
-    console.log(this);
-    
-    const file = this.files['0'];
-    console.log(this.files['1']);
-    console.log(this.files['2']);
-    
+    const files = this.files;
+    if (o.type === 'img') {
+      let fileArr = Object.keys(files);
+      if (fileArr.length > window.canUploadLength) {
+        o.showTost('每次最多上传9个文件');
+        fileArr = fileArr.slice(0, window.canUploadLength);
+      }
+
+      fileArr.forEach(function (cur) {
+        const curId = parseInt(Math.random() * 1000);
+        (function (file, o, config) {
+          uploadFn(file, o, config);
+        })(files[cur], o, { all: fileArr.length, current: cur, curId: curId });
+      });
+    } else {
+      uploadFn(files['0'], o);
+    } 
+  });
+
+
+  function uploadFn(file, o, config) {
     const size = file.size;
     const mediaName = file.name;
     const flag = patt.test(mediaName);
     if (!flag && size >= o.videoSize) {
-      o.showTips(`视频不能超出40M`);
+      o.showTost(`视频不能超出40M`);
       this.value = '';
       return;
     } else if (!flag && o.videoType.indexOf(file.type) < 0) {
       o.error(o.type);
-      o.showTips(`请上传mp4格式的视频`);
+      o.showTost(`请上传mp4格式的视频`);
       this.value = '';
       return;
     } else if (flag && size > o.mixsize) {
-      o.showTips(`图片大小不能大于3M`);
+      o.showTost(`图片大小不能大于3M`);
       this.value = '';
       return
-    } else if (flag && o.type.indexOf(file.type) < 0) {
-      o.error(o.type);
-      o.showTips(`请上传png/jpg/jpeg格式的图片`);
+    } else if (flag && o.imgType.indexOf(file.type) < 0) {
+      o.error(o.imgType);
+      o.showTost(`请上传png/jpg/jpeg格式的图片`);
       this.value = '';
       return
     } else {
       var formData = new FormData();
-      o.showTips('正在上传文件...');
+      o.showTost('正在上传文件...');
       formData.append('media', file);
       formData.append('mediaType', flag ? 1 : 2);
+      formData.append('corpId', o.corpId);
+
       $.ajax({
         url: o.url,
         type: 'POST',
         data: formData,
         contentType: false,
         processData: false,
-        beforeSend: () => {
-          $progress.show().animate({ 'width': '600px' }, 1500, 'linear').animate({ 'width': '700px' }, 10000, 'linear');
+        beforeSend: function () {
+          o.sendBefore && o.sendBefore(config);
         },
-        success: (res) => {
-          o.showTips('上传成功');
-          $progress.animate().stop().animate({'width': '750px' }, 500, 'linear', () => {
-            $progress.hide().css('width', '3px');
-          });
-          o.success(res);
+        success: function (res) {
+          o.success && o.success(res, config);
         },
-        error: (res) => {
-          o.showTips('上传失败');
-          $progress.hide().css('width', '3px')
-          o.error(res)
+        error: function (res) {
+          o.error && o.error(res, config);
         }
       });
       this.value = '';
     }
-  });
+  }
+
+
+
+
+
 
 
   // 图片处理
@@ -145,7 +160,7 @@ $.fn.UploadImg = function (o) {
     var fileSize = file.size;
     if (fileSize >= 1024 * 1024 * 50) {
       // box.msg('上传视频超出大小，请选择小一点的视频！');
-      o.showTips('上传视频超出大小，请选择小一点的视频！');
+      o.showTost('上传视频超出大小，请选择小一点的视频！');
       return false;
     }
     // box.loading('正在上传...');
@@ -162,8 +177,6 @@ $.fn.UploadImg = function (o) {
     xhr.addEventListener("abort", uploadCanceled, false);
     //请求地址
     xhr.open("POST", o.url);
-    console.log(fd);
-    
     xhr.send(fd);
   };
 

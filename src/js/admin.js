@@ -43,11 +43,23 @@ const dialog = {
     $('body').css('overflow', 'auto').find('#dialog').remove();
   },
   close() {
-    console.log('close');
-    
     $('body').css('overflow', 'auto').find('#dialog').remove();
   }
 };
+
+const loading = {
+  show () {
+    $('body').append(`
+      <div class="loading-cmp">
+        <i class="iconfont icon-loading"></i>
+      </div>
+    `)
+  },
+  hide () {
+    $('.loading-cmp').remove();
+  }
+}
+
 
 const toast = {
   success (text) {
@@ -85,6 +97,7 @@ const toast = {
       this.totalCount = null;
       this.isList = $('#listPage').length === 1;
       // this.mode = 1;
+      this.pageId = 0;
       this.config = {};
       this.corpId = window.location.pathname.split('/')[2];
       this.init();
@@ -101,26 +114,28 @@ const toast = {
           toast.error('网络错误，获取业务模式失败');
         }
       });
-      console.log('init');
-      
       this.bindEvents();
       this.previePic();
       this.modeSeting();
       this.slideEvents();
       this.uploadImage();
-      // $(`input[name="enableWatermark"][value="1"]`).prop('checked', true)
       if (this.isList) {
         this.getList();
         this.deleteItem();
         this.changeLikeCount();
-        this.downLoadSources();
+        this.downloadAll();
       } else {
         this.wangEditor();
+        this.handleSystemConfig();
       }
+
+
+
         
     }
 
     bindEvents () {
+      const self = this;
       $('.j-handle-event').click(e => {
         const $parent = $(e.target).closest('.nav-item');
         const $currentUl = $parent.find('ul.options');
@@ -131,7 +146,70 @@ const toast = {
         $parent.siblings().find('ul.options').slideUp().removeClass('show');
         $currentUl.slideDown().addClass('show');
       });
+
+      // 上传图片
+      if (!self.isList) {
+        $('#filedata').UploadImg({
+          url: '/admin/api/uploadPicture',
+          width: '750',
+          showTips: toast,
+          multiple: this.isList,
+          quality: '0.8',
+          mixsize: 1024 * 1024 * 3,
+          videoSize: 1024 * 1024 * 50,
+          videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
+          type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
+          sendBefore: () => {
+
+          },
+          success: (res) => {
+            toast.success('上传成功');
+            if (res.ret === 0) {
+              if (self.pageId === 1) {
+                $('.shareImg').html(`<img src=${res.data} alt="">`);
+              } else if (self.pageId === 2) {
+                $('.waterMarkImg').html(`<img src=${res.data} alt="">`)
+              } else {
+                $('.banners').html(`<img src=${res.data} alt="">`)
+              }
+            }
+          },
+          error: (res) => {
+            toast.error('上传出错');
+          }
+        });
+      } else {
+        $('#filedata').UploadImg({
+          url: '/admin/api/media/upload',
+          width: '750',
+          showTips: toast,
+          multiple: this.isList,
+          quality: '0.8',
+          corpId: self.corpId,
+          mixsize: 1024 * 1024 * 3,
+          videoSize: 1024 * 1024 * 50,
+          videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
+          type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
+          sendBefore: (config) => {
+            if (config, config.current === '0') {
+              toast.success('开始上传');
+            }
+          },
+          success: (res, config) => {
+            if (config && (config.all - 1) === config.current){
+              toast.success('上传完成');
+            }
+          },
+          error: (err, config) => {
+            if (config) {
+              toast.error(`第${config.current}文件上传出错`);
+            }
+          }
+        })
+      }
+      
     }
+
 
     getList (ops = {}) {
       const self = this;
@@ -144,7 +222,9 @@ const toast = {
         patten: 1,
         ...ops
       }
+      loading.show();
       $.get(url, sendData, res => {
+        loading.hide();
         if (res.ret === 0) {
           const data = res.data.dataList;
           self.totalCount = res.data.totalCount;
@@ -160,7 +240,7 @@ const toast = {
                 <div class="info">
                   <p><span>类型：</span><span>图片</span></p>
                   <p><span>上传时间：</span><span>2018-20-30</span></p>
-                  <p><span>点赞数：</span><span class="like-count">20</span><a class="j-change-like">修改</a></p>
+                  <p><span>点赞数：</span><span class="like-count">${item.voteNum}</span><a class="j-change-like">修改</a></p>
                   <p class="handle">
                     <a class="j-down down">下载</a>
                     <a class="delete">删除</a>
@@ -178,7 +258,7 @@ const toast = {
                 <div class="info">
                   <p><span>类型：</span><span>视频</span></p>
                   <p><span>上传时间：</span><span>2018-20-30</span></p>
-                  <p><span>点赞数：</span><span class="like-count">20</span><a class="j-change-like">修改</a></p>
+                  <p><span>点赞数：</span><span class="like-count">${item.voteNum}</span><a class="j-change-like">修改</a></p>
                   <p class="handle">
                     <a class="j-down down">下载</a>
                     <a class="delete">删除</a>
@@ -307,7 +387,9 @@ const toast = {
                 $li.siblings().find('a').removeClass('active');
                 self.config.mode = mode;
                 toast.success('模式修改成功');
-                self.getList();
+                if (self.isList) {
+                  self.getList();
+                }
               } else {
                 toast.error(res.msg || '网络错误，请稍后重试');
               }
@@ -336,64 +418,32 @@ const toast = {
 
 
     uploadImage () {
+      const self = this;
       $('.btn-upload').on('click', e => {
         e.preventDefault();
-        try {
-          const $currentPage = $(e.target).closest('form');
-          if (currentPage === 'watermarkForm') {
-            $('#filedata').attr('multiple', true).trigger('click');
-          } else {
-            $('#filedata').trigger('click');
-          }
-        } catch (error) {
+        if (self.isList) {
+          $('#filedata').trigger('click');
+        } else {
+          const pageId = $(e.target).closest('.set-page').data('pageid');
+          self.pageId = pageId;
           $('#filedata').trigger('click');
         }
       });
     }
 
-
-    downLoadSources () {
-      // 单个下载
+    // 下载本页内容
+    downloadAll () {
+      const corpId = this.config.corpId;
+      $('.btn-download').click(() => {
+        const ids = Array.from($('.list .item')).map(item => $(item).data('id')).join(',');
+        $('#downLoadSource').attr('src', `/admin/api/downloadMedias?mediaIds=${ids}`);
+      });
       $('.content').on('click', '.j-down', e => {
-        const $currentItem = $(e.target).closest('.item');
-        const imgUrl = $currentItem.find('img').attr('src');
-        // 下载
-        function downloadIamge(imgUrl, name) {
-          var image = new Image()
-          // 解决跨域 Canvas 污染问题
-          image.setAttribute('crossOrigin', 'anonymous')
-          image.onload = function () {
-            var canvas = document.createElement('canvas')
-            canvas.width = image.width
-            canvas.height = image.height
-
-            var context = canvas.getContext('2d')
-            context.drawImage(image, 0, 0, image.width, image.height)
-            var url = canvas.toDataURL('image/png')
-
-            // 生成一个a元素
-            var a = document.createElement('a')
-            // 创建一个单击事件
-            var event = new MouseEvent('click')
-
-            // 将a的download属性设置为我们想要下载的图片名称，若name不存在则使用‘下载图片名称’作为默认名称
-            a.download = name || '下载图片名称'
-            // 将生成的URL设置为a.href属性
-            a.href = url
-
-            // 触发a的单击事件
-            a.dispatchEvent(event)
-          }
-
-          image.src = imgUrl;
-        }
-
-        // 调用方式
-        // 参数一： 选择器，代表img标签
-        // 参数二： 图片名称，可选
-        downloadIamge(imgUrl, 'test.png');
+        const id = $(e.target).closest('.item').data('id');
+        $('#downLoadSource').attr('src', `/admin/api/downloadMedias?mediaIds=${id}`);
       });
     }
+
 
     wangEditor () {
       const self = this;
@@ -401,27 +451,19 @@ const toast = {
       this.editor = new E('#editor');
       this.editor.customConfig = {
         menus:[
+          'head',
+          'bold',
           'image'
         ],
         uploadImgServer: '/admin/api/uploadPicture',
+        eshowLinkImg: false,
+        uploadImgMaxLength: self.isList ? 9 : null,
+        uploadFileName: 'picture',
         uploadImgMaxSize: 3 * 1024 * 1024,
         uploadImgHooks: {
-          success: function success(xhr, editor, result) {
-            // 图片上传并返回结果，图片插入成功之后触发
+          customInsert: (fn, res, n) => {
+            fn(res.data);
           },
-          fail: (xhr, editor, result) => {
-            // 图片上传并返回结果，但图片插入错误时触发
-            console.log('sadasdf');
-            return false;
-          },
-          error: (xhr, editor) => {
-            console.log('sadasdf');
-            
-            return false;
-          },
-          linkImgCallback: (params) => {
-            
-          }
         }
       };
       this.editor.create();
@@ -450,7 +492,6 @@ const toast = {
               toast.warning('点赞数应该为数字');
               return;
             }
-            console.log(id);
             $.post(`/admin/api/modifyVoteNum`, {
               mediaId: id,
               corpId: self.corpId,
@@ -474,49 +515,74 @@ const toast = {
 
     // 对系统配置的内容进行回填，保存
     handleSystemConfig () {
-      $('j-save-config').click(e => {
+      const self = this;
+      $('.j-save-config').click(e => {
+        e.preventDefault();
         const $target = $(e.target);
         const $content = $target.closest('.set-page');
-        const pageId = $content.data('pageId');
-        const sendData = {};
+        const pageId = $content.data('pageid');
+        
+        let sendData = {};
         if (pageId === 1) {
+          const wxShareDesc = $content.find('#wxShareDesc').val().trim();
+          const wxShareTitle = $content.find('input[name="wxShareTitle"]').val().trim();
+          const wxSharePic =  $content.find('.shareImg img').attr('src');
+          if (!wxShareDesc) {
+            toast.error('请填写分享描述');
+          }
+          if (!wxShareTitle) {
+            toast.error('请填写分享标题');
+          }
+          if (!wxSharePic) {
+            toast.error('请上传分享图片');
+          }
           sendData = {
             ...sendData,
-            wxShareDesc: $content.find('name="wxShareDesc"').val().trim(),
-            wxShareTitle: $content.find('name="wxShareTitle"').val().trim(),
-            wxSharePic: self.config.wxSharePic
+            wxShareDesc,
+            wxShareTitle,
+            wxSharePic
           };
         } else if (pageId === 2) {
+          const enableWatermark = parseInt($content.find('input[type="radio"]:checked').val());
+          const watermarkPic = $content.find('.waterMarkImg img').attr('src');
+          if (!watermarkPic) {
+            toast.error('请上传水印图片');
+
+            return;
+          }
           sendData = {
             ...sendData,
-            enableWatermark: parseInt($content.find('input[type="radio]:checked').val()),
-            watermarkPic: self.config.watermarkPic
+            enableWatermark,
+            watermarkPic
           };
         } else {
+          const accountDesc =  self.editor.txt.html();
+          const banners = $content.find('.banners img').attr('src');
+          if (!accountDesc) {
+            toast.error('请填写网址介绍信息');
+          }
+          if (!banners) {
+            toast.error('请上传轮播图图片');
+          }
           sendData = {
             ...sendData,
-            accountDesc: self.config.accountDesc,
-            banners: self.config.banners
+            accountDesc,
+            banners
           };
         }
-
         sendData = {
           ...self.config,
           ...sendData
         };
-        console.log(sendData);
+        loading.show();
         $.post('/admin/api/updateConfig', sendData, res => {
-          console.log(res);
+          loading.hide();
           if (res.ret === 0) {
             toast.success('更新成功');
           } else {
             toast.error(res.msg || '网络错无情稍后重试');
           }
         });
-
-
-
-
       });
     }
 
@@ -541,10 +607,12 @@ const toast = {
       data.wxSharePic && $('.set-wx_share .shareImg').html(`<img src="${data.wxSharePic}"/>`);
       
       if (data.banners) {
-        const bannerTemplate = data.banners.map(item => `<img src="${item}/>`);
+        const bannerTemplate = [data.banners].map(item => `<img src="${item}"/>`);
+
+        
         $('.set-account .banners').html(bannerTemplate.join(''));
       }
-      data.watermarkPic && $('.set-watermark .waterMarkImg').html(`<img src="${data.watermarkPic}/>`);
+      data.watermarkPic && $('.set-watermark .waterMarkImg').html(`<img src="${data.watermarkPic}"/>`);
 
       // 活动描述回填
       data.accountDesc && this.editor && this.editor.txt.html(data.accountDesc);

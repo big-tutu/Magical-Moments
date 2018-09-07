@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Photo Moments</title>
-<link href="static/css/admin.css?5a6edb340d795969cd9a" rel="stylesheet"></head>
+<link href="static/css/admin.css?03a58fb2fc7b0bbe7191" rel="stylesheet"></head>
 <body>
   <div class="list-container">
     <!-- 头部 -->
@@ -42,12 +42,12 @@
                   <span>图片和视频</span>
                 </a>
               </li>
-              <li data-mode="3">
+              <!-- <li data-mode="3">
                 <a class="j-mode-item">
                   <i class="iconfont icon-iconset0126"></i>
                   <span>仅视频</span>
                 </a>
-              </li>
+              </li> -->
             </ul>
           </li>
         </ul>
@@ -75,7 +75,8 @@
     <div class="content" id="listPage">
       <h2>内容列表</h2>
       <div class="btn-group">
-        <button class="btn-upload btn btn-outline">上传图片</button>
+        <button class="btn-upload btn btn-outline">上传</button>
+        <!-- <button class="btn-upload btn btn-outline video">上传视频</button> -->
         <button class="btn-download btn btn-outline">下载本页内容</button>
         <p>共<span class="count-img">23</span>张图片,<span class="count-video">232</span>个图片，<span class="view-count">232</span>浏览量</p>
       </div>
@@ -91,12 +92,14 @@
       <div class="paginate clearfix"></div>
     </div>
     <div class="hide">
-      <input type="file" id="filedata" multiple name="filedata" accept="image/*" />
-      <iframe src="" id='downFile'></iframe>
-      <canvas id="cavasimg" width="607" height="367"></canvas>
+      <input type="file" id="filedata" multiple name="filedata" accept="image/*video/*" />
+      <iframe id="downLoadSource" frameborder="0"></iframe>
+      <!-- <div id="editor"></div> -->
     </div>
   </div>
   <script src="/static/js/jquery.min.js"></script>
   <script src="/static/js/jquery.pagination.js"></script>
-<script type="text/javascript" src="static/js/admin.js?5a6edb340d795969cd9a"></script></body>
+  <script src="/static/js/wangEditor.min.js"></script>
+  <script src="/static/js/upPicture.js"></script>
+<script type="text/javascript" src="static/js/admin.js?03a58fb2fc7b0bbe7191"></script></body>
 </html>

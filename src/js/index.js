@@ -3,12 +3,16 @@ import VConsole from 'vconsole/dist/vconsole.min.js';
 let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
+  win.canUploadLength = 9;
   class App {
     constructor() {
       this.currentList = 'home';
       this.uploadType = {
         imgs: ''
       }
+      this.corpId = $('.container').data('corpid');
+      this.currentImages = [];
+      this.config = {};
       this.loading = false;
       this.hasMore = true;
       this.isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
@@ -18,19 +22,19 @@ import "../css/style.scss";
         WX_CONFIG: '/api/getConfig',
         UPLOAD: '/api/media/upload',
         MAKE_LOVE: '/api/media/love',
-
         BANNER_DATA: '/api/banner/data'
       };
       this.init();
     }
     async init() {
-      await $.get('/api/getMode', res => {
+      await $.get('/api/getConfig', {corpId: this.corpId}, res => {
         if (res.ret === 0) {
-          const mode = res.data.mode;
-          this.mode = mode;
-          if (mode === 1) {
-            $('#filedata').attr('accept', 'image/*');
-          }
+          const data = res.data;
+          this.mode = data.mode;
+          this.config = data;
+            // 回填站点介绍信息
+          $('.page-rules .message').html(data.accountDesc || `<p>No description</p>`)
+          
         } else {
           this.showTost('网络出现故障');
         }
@@ -47,6 +51,8 @@ import "../css/style.scss";
       this.handleLike();
       this.showTip();
       this.scrollLoadMore();
+      this.handleConfirm();
+      this.uploadPageEvents();
       this.getList({
         page: 1,
         patten: 1,
@@ -54,9 +60,20 @@ import "../css/style.scss";
       }, 'home');
     }
     main() {
+      const self = this;
+      const $uploadPreview = $('.upload-preview');
+      const $selectWrapper = $('.select-img');
       $('.btn-upload').on('tap', e => {
         e.preventDefault();
-        $('#filedata').trigger('click');
+        if (self.mode === '2') {
+          const $mask = $('.confirm-mask');
+          $mask.show().find('.mask-contaner').addClass('show-mask');
+          return;
+        } else if (self === '3') {
+          $('#fileVidoe').trigger('click');
+          return;
+        }
+        $('#fileImage').trigger('click');
       });
 
       $('.btn-home').on('tap', e => {
@@ -78,16 +95,64 @@ import "../css/style.scss";
 
 
       // 上传图片
-      $('#filedata').UploadImg({
+
+      $('#fileImage').UploadImg({
         url: this.api.UPLOAD,
         width: '750',
-        showTips: this.showTost,
+        type: 'img',
+        showTost: this.showTost,
         quality: '0.8',
+        corpId: self.corpId,
         mixsize: 1024 * 1024 * 3,
+        imgType: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
+
+        sendBefore: (config) => {
+
+          $uploadPreview.show();
+          $('.img-add.img').remove();
+          $selectWrapper.append(
+            `<div class="img img${config.curId}">
+              <span>
+                <img class="image" src="" alt="">
+              </span>
+              <a class="delete j-delete">+</a>
+              <i class="iconfont icon-loading style="color: rgba(0, 0, 0, .85)""></i>
+            </div>`
+          )
+
+        },
+        success: (res, config) => {
+          $selectWrapper.find(`.img${config.curId}`).attr('data-id', res.data.id).find('img').attr('src', res.data.cover);
+          self.currentImages.push(res.data);
+          // 所有上传完成提示上传成功并移除loading
+          if ((+config.current + 1) === config.all) {
+            this.showTost('上传成功');
+            $selectWrapper.find('.iconfont').remove();
+            if (self.currentImages.length < 9) {
+              $selectWrapper.append(`
+                <div class="img img-add">
+                  <a class="j-delete"><i class="iconfont icon-Addx"></i></a>
+                </div>
+              `)
+            }
+          }
+        },
+        error (res) {
+          this.showTost('上传出现错误');
+        }
+      });
+
+      // 上传视频
+      $('#fileVidoe').UploadImg({
+        url: this.api.UPLOAD,
+        width: '750',
+        type: 'video',
+        showTost: this.showTost,
+        quality: '0.8',
+        corpId: self.corpId,
         videoSize: 1024 * 1024 * 50,
         videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
-        type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
-        success:  (res) => {
+        success: (res) => {
           if (res.ret === 0) {
             this.showTost('上传成功');
             setTimeout(() => {
@@ -98,8 +163,8 @@ import "../css/style.scss";
             this.showTost(res.msg || '上传失败稍后重试');
           }
         },
-        error (res) {
-          
+        error(res) {
+
         }
       });
     }
@@ -115,7 +180,7 @@ import "../css/style.scss";
       });
     }
     // 切换页面
-    page(active) {
+    page(active, cb) {
       const $activePage = $("#page-" + active);
       $activePage.addClass("active").siblings(".page").removeClass("active");
       $activePage.find('.preview').html('');
@@ -123,7 +188,7 @@ import "../css/style.scss";
         page: 1,
         count: active === 'home' ? 20 : 10,
         patten: active === 'home' ? 1 : 2
-      }, active);
+      }, active, cb && cb);
     }
     // 显示和隐藏提示
     showTip() {
@@ -141,13 +206,17 @@ import "../css/style.scss";
         });
       });
     }
-    getList (ops, page) {
+    getList (ops, page, callback) {
       const url = this.api.LIST;
       const self = this;
-      const sendData = ops;
+      const sendData = {
+        ...ops,
+        corpId: self.corpId
+      };
       self.loading = true;
       $.get(url, sendData, res => {
         self.loading = false;
+        if (callback) callback();
         if (res.ret === 0) {
           const data = res.data.dataList;
           // const data = [];
@@ -184,16 +253,12 @@ import "../css/style.scss";
           $(`#page-${page}`).find('.preview').append(template.join(''));
           if ($imgWrapper.find('.item') .length === 0) {
             const winHeight = $(window).height();
-            console.log(winHeight);
-            
             let curTop = 0;
             if (page === 'rank') {
               curTop = (winHeight - 200) / 2;
             } else {
               curTop = (winHeight - 550) / 2;
             }
-            console.log(curTop);
-            
             $imgWrapper.html(`<div class="noResult" style="top: ${curTop}px">
             <p>Start sharing the splendid moments you've captured right now!</p>
             </div>`);
@@ -247,63 +312,57 @@ import "../css/style.scss";
     wxJssdk() {
       const self = this;
       const api = self.api.WX_CONFIG;
+      const config =  self.config;
       if (/MicroMessenger/i.test(navigator.userAgent)) {
         $.getScript("https://res.wx.qq.com/open/js/jweixin-1.0.0.js", function callback() {
-          $.get(api, {
-            path: window.location.href.split('#')[0]
-          }, res => {
-            if (res.ret === 0) {
-              const data = res.data;
-              wx.config({
-                debug: false,
-                appId: data.appId,
-                timestamp: data.timestamp,
-                nonceStr: data.nonceStr,
-                signature: data.signature,
-                jsApiList: [
-                  'onMenuShareTimeline',
-                  'onMenuShareAppMessage',
-                  'hideMenuItems',
-                  'previewImage',
-                  'chooseImage',
-                  'uploadImage',
-                  'getLocalImgData',
-                  'downloadImage'
-                ]
-              });
-              wx.ready(function () {
-                const shareData = {
-                  title: 'Photo Moments for FY19 IRM SUMMIT',
-                  link: 'http://photo-moments.yxking.xyz/mobile/index',
-                  desc: 'Welcome to the Photo Moments for the FY19 IRM SUMMIT, here you can upload and get real-time photos of the meeting!',
-                  imgUrl: 'http://photo-moments.yxking.xyz/static/imgs/avatar.png',
-                  success: function () {
-                    // alert('success');
-                  },
-                  cancel: function () {
-                  }
-                };
-                wx.onMenuShareTimeline(shareData);
-                wx.onMenuShareAppMessage(shareData);
-                wx.hideMenuItems({
-                  menuList: [
-                    'menuItem:share:qq',
-                    'menuItem:share:weiboApp',
-                    'menuItem:share:facebook',
-                    'menuItem:share:QZone',
-                    'menuItem:favorite',
-                    'menuItem:copyUrl',
-                    'menuItem:readMode',
-                    'menuItem:openWithQQBrowser',
-                    'menuItem:openWithSafari',
-                  ]
-                });
+          wx.config({
+            debug: false,
+            appId: config.appId,
+            timestamp: config.timestamp,
+            nonceStr: config.nonceStr,
+            signature: config.signature,
+            jsApiList: [
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'hideMenuItems',
+              'previewImage',
+              'chooseImage',
+              'uploadImage',
+              'getLocalImgData',
+              'downloadImage'
+            ]
+          });
+          wx.ready(function () {
+            const shareData = {
+              title: config.wxShareTitle,
+              link: config.url,
+              desc: config.wxShareDesc,
+              imgUrl: config.wxSharePic,
+              success: function () {
+                // alert('success');
+              },
+              cancel: function () {
+              }
+            };
+            wx.onMenuShareTimeline(shareData);
+            wx.onMenuShareAppMessage(shareData);
+            wx.hideMenuItems({
+              menuList: [
+                'menuItem:share:qq',
+                'menuItem:share:weiboApp',
+                'menuItem:share:facebook',
+                'menuItem:share:QZone',
+                'menuItem:favorite',
+                'menuItem:copyUrl',
+                'menuItem:readMode',
+                'menuItem:openWithQQBrowser',
+                'menuItem:openWithSafari',
+              ]
+            });
 
-              })
-              wx.error(function (res) {
-                // window.console('error', res)
-              });
-            }
+          })
+          wx.error(function (res) {
+            // window.console('error', res)
           });
         })
       }
@@ -324,7 +383,8 @@ import "../css/style.scss";
         _this.addClass('disabled');
         $.post(url, {
           id,
-          act
+          act,
+          corpId: self.corpId
         }, function (res) {
         if (res.ret === 0) {
           if (act === 1) {
@@ -490,20 +550,16 @@ import "../css/style.scss";
     }
 
     renderBanner () {
+      const self = this;
       const bannerList = [
         {
           imgUrl: '/static/imgs/banner.png',
           id: 1
         },
-        // {
-        //   imgUrl: '/static/imgs/banner.png',
-        //   id: 2
-        // },
-        // {
-        //   imgUrl: '/static/imgs/banner.png',
-        //   id: 3
-        // }
       ];
+
+      
+
       const sliders = bannerList.map(slide => {
         return `<li id="${slide.id}" class="slider-item openParam" data-param="">
           <div class="img-wrap">
@@ -519,38 +575,95 @@ import "../css/style.scss";
       });
     }
 
-
-    bannerList (bannerList) {
-      const sliders = bannerList.map(slide => {
-        return `<li id="${slide.id}" class="slider-item openParam" data-param="">
-          <div class="img-wrap">
-              <img class="banner-image" src="${slide.imgPath}">
-          </div>
-        </li>`
-      });
-
-      return `<ul class="slider-list">${sliders.join('')}</ul>`;
+    // 视频类型确认
+    handleConfirm () {
+      const $mask = $('.confirm-mask');
+      const $container = $mask.find('.mask-contaner');
+      $container.on('click', 'a', e => {
+        const $target = $(e.target);
+        if ($target.hasClass('cancel')) {
+          $container.removeClass('show-mask');
+          $mask.hide();
+          return;
+        } else if ($target.hasClass('video')) {
+          $container.removeClass('show-mask');
+          $mask.hide();
+          $('#fileVidoe').trigger('click');
+        } else {
+          $container.removeClass('show-mask');
+          $mask.hide();
+          $('#fileImage').trigger('click');
+        }
+      })
     }
 
 
-    // 上传图片
-    uploadMedia (wx) {
-      $('.btn-upload').on('tap', e => {
-        e.preventDefault();
-        console.log(e);
-        console.log(wx);
-        
-        wx.chooseImage({
-          count: 9, // 默认9
-          sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-          sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-          success: function (res) {
-            var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-            console.log(localIds);
-            
-          }
+
+
+    // 上传确认页面事件
+    uploadPageEvents () {
+      const self = this;
+      const $uploadPreview = $('.upload-preview');
+
+      // 确认上传
+      $uploadPreview.find('.upload-ok').click(() => {
+        win.canUploadLength = 9;
+        self.currentImages = [];
+        $('body').append(`
+          <div class="is-img-uploading">
+            <i class="iconfont icon-loading" style="color: rgba(0, 0, 0, .85); z-index: 320"></i>
+            <p>图片上传中</p>
+          </div>`
+        )
+        self.page('home', () => {
+          $uploadPreview.hide().find('.select-img').empty();
+          win.canUploadLength = 9;
+          self.currentImages = [];
+          $('.is-img-uploading').remove();
+          $uploadPreview.hide().find('.select-img').empty();
         });
+
       });
+
+      // 删除或者添加
+      $uploadPreview.on('click', e => {
+        const $target = $(e.target);
+        // 确认操作
+        if ($target.hasClass('delete')) {
+          // 删除图片
+          const $parent = $target.closest('.img');
+          const id = $parent.data('id');
+          $parent.remove();
+          self.currentImages.pop();
+          win.canUploadLength = 9 - self.currentImages.length;
+
+          if ($uploadPreview.find('.img-add').length === 0) {
+            $uploadPreview.find('.select-img').append(`
+              <div class="img img-add">
+                <a class="j-delete"><i class="iconfont icon-Addx"></i></a>
+              </div> 
+            `);
+          }
+          $.post(`/admin/api/media/${id}/delete`, {corpId: self.corpId});
+        } else if ($target.hasClass('iconfont')) {
+          // 新增图片
+          win.canUploadLength = 9 - self.currentImages.length;
+          $('#fileImage').trigger('click');
+        } else if ($target.hasClass('image')) {
+          const curUrl = $target.attr('src');
+          const urls = Array.from($uploadPreview.find('.image')).map(item => $(item).attr('src'));
+          if (typeof wx !== 'undefined') {
+            wx.previewImage({
+              current: curUrl,
+              urls: urls
+            });
+            return false;
+          }
+        }
+      });
+
+
+
     }
 
 

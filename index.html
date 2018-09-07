@@ -20,7 +20,7 @@
   </script>
 </head>
 <body>
-  <div class="container">
+  <div class="container" data-corpid="N83CXg2Arlw">
 
     <!-- 按钮组 -->
     <div class="btn-group">
@@ -88,7 +88,8 @@
 
     <!-- s = 资源上传控件 -->
     <div class="hide">
-      <input type="file" id="filedata" multiple name="filedata" accept="image/*,video/*"/>
+      <input type="file" id="fileImage" multiple name="filedata" accept="image/*"/>
+      <input type="file" id="fileVidoe" name="filedata" accept="video/*"/>
     </div>
     <!-- e = 资源上传控件 -->
 
@@ -113,6 +114,25 @@
 
     <!-- 进度条 -->
     <div class="progress"></div>
+
+    <!-- 媒体类型上传确认框 -->
+    <div class="confirm-mask">
+      <div class="mask-contaner">
+        <div>
+          <a class="img"><i class="type iconfont icon-tupianx"></i>上传图片</a>
+          <a class="video"><i class="type iconfont icon-shipinx"></i>上传视频</a>
+        </div>
+        <a class="cancel">取消</a>
+      </div>
+    </div>
+
+    <!-- 图片上传 -->
+    <div class="upload-preview">
+      <p>已选择的图片</p>
+      <div class="select-img">
+      </div>
+      <a class="upload-ok">确认上传</a>
+    </div>
 
 
   </div>

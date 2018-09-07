@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Photo Moments</title>
-<link href="static/css/admin.css?5a6edb340d795969cd9a" rel="stylesheet"></head>
+<link href="static/css/admin.css?03a58fb2fc7b0bbe7191" rel="stylesheet"></head>
 
 <body>
   <div class="list-container">
@@ -44,12 +44,12 @@
                   <span>图片和视频</span>
                 </a>
               </li>
-              <li data-mode="3">
+              <!-- <li data-mode="3">
                 <a class="j-mode-item">
                   <i class="iconfont icon-iconset0126"></i>
                   <span>仅视频</span>
                 </a>
-              </li>
+              </li> -->
             </ul>
           </li>
         </ul>
@@ -74,10 +74,12 @@
 
     <!-- 内容区域 -->
     <div class="content set-content">
-      <div class="set-page set-wx_share" data-pageId="1">
+
+      <!-- 分享设置 -->
+      <div class="set-page set-wx_share" data-pageid="1">
         <h2>微信分享设置</h2>
         <div class="">
-          <form method="post" id="shareForm">
+          <form id="shareForm">
             <ul class="form-list">
               <li>
                 <label>标题*</label>
@@ -89,9 +91,10 @@
               <li>
                 <label>图片*</label>
                 <div class="case">
-                  <button class="btn btn-outline btn-upload" type="button">点击上传</button>
+                  <button class="btn btn-outline btn-upload" type="button" data-upid="1">点击上传</button>
                   <p class="tip">* 建议尺寸为500*500。</p>
-                  <div class="shareImg"></div>
+                  <div class="shareImg">
+                  </div>
                 </div>
               </li>
               <li>
@@ -103,15 +106,18 @@
               </li>
             </ul>
             <div class="">
-              <button type="submit" class="btn btn-primary j-save-config">保存</button>
+              <button type="button" class="btn btn-primary j-save-config">保存</button>
             </div>
           </form>
         </div>
       </div>
-      <div class="set-page set-watermark" data-pageId="2">
+
+
+      <!-- 水印设置 -->
+      <div class="set-page set-watermark" data-pageid="2">
         <h2>水印设置</h2>
         <div>
-          <form method="post" id="watermarkForm">
+          <form id="watermarkForm">
             <ul class="form-list">
               <li>
                 <label>图片水印开关*</label>
@@ -123,28 +129,33 @@
               <li>
                 <label>上传水印图片*</label>
                 <div class="case">
-                  <button class="btn btn-outline btn-upload" type="button">点击上传</button>
-                  <div class="waterMarkImg"></div>
+                  <button class="btn btn-outline btn-upload" type="button" data-upid="2">点击上传</button>
+                  <div class="waterMarkImg">
+                  </div>
                 </div>
               </li>
             </ul>
             <div class="">
-              <button type="submit" class="btn btn-primary j-save-config">保存</button>
+              <button type="button" class="btn btn-primary j-save-config">保存</button>
             </div>
           </form>
         </div>
       </div>
-      <div class="set-page set-account" data-pageId="3">
+
+
+      <!-- 账号设置 -->
+      <div class="set-page set-account" data-pageid="3">
         <h2>账号设置</h2>
         <div>
-          <form method="post" id="accountForm">
+          <form id="accountForm">
             <ul class="form-list">
               <li>
                 <label>首页banner图*</label>
                 <div class="case">
-                  <button class="btn btn-outline btn-upload" type="button">点击上传</button>
+                  <button class="btn btn-outline btn-upload" type="button" data-upid="3">点击上传</button>
                   <p class="tip">* 建议尺寸为750*384。</p>
-                  <div class="banners"></div>
+                  <div class="banners">
+                  </div>
                 </div>
               </li>
               <li>
@@ -156,25 +167,29 @@
               </li>
             </ul>
             <div class="">
-              <button type="submit" class="btn btn-primary j-save-config">保存</button>
+              <button type="button" class="btn btn-primary j-save-config">保存</button>
             </div>
           </form>
         </div>
       </div>
+
+
+      <!-- 上传控件 -->
       <div class="hide">
         <input type="file" id="filedata" name="filedata" accept="image/*" />
       </div>
     </div>
 
     <!-- 底部分页器 -->
-    <!-- <div class="footer">
+    <div class="footer">
       <div class="paginate clearfix"></div>
-    </div> -->
+    </div>
   </div>
   <script src="/static/js/jquery.min.js"></script>
   <script src="/static/js/jquery.pagination.js"></script>
   <script src="/static/js/wangEditor.min.js"></script>
+  <script src="/static/js/upPicture.js"></script>
   <!-- <script src="/static/js/base.js"></script> -->
-<script type="text/javascript" src="static/js/admin.js?5a6edb340d795969cd9a"></script></body>
+<script type="text/javascript" src="static/js/admin.js?03a58fb2fc7b0bbe7191"></script></body>
 
 </html>

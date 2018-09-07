@@ -30,6 +30,8 @@ ul {
 
 .icon-xiala:before { content: "\e615"; }
 
+.icon-loading:before { content: "\e68f"; }
+
 
 
 input:-webkit-autofill,
@@ -600,10 +602,10 @@ HTML, body {
 
     > div {
       padding-left: 40px;
-      form {
+      > form {
         margin-top: 20px;
-        ul {
-          li {
+        > ul {
+          > li {
             margin-bottom: 20px;
             width: 800px;
             > label {
@@ -629,7 +631,7 @@ HTML, body {
             }
 
             .shareImg, .waterMarkImg, .banners {
-              padding: 10px;
+              margin-top: 20px;
               img {
                 width: 200px;
               }
@@ -649,5 +651,51 @@ HTML, body {
 // 编辑器
 #editor {
   width: 500px;
+}
+
+.loading-cmp {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  z-index: 200;
+  i.icon-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    z-index: 201;
+    color: #0084ff;
+    font-size: 30px;
+    animation: loading 2.5s linear infinite;
+    -webkit-animation: loading 2.5s linear infinite;
+    transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+  }
+}
+
+
+@keyframes loading {
+  0% {
+    transform: rotate(0) translate(-50%, -50%);
+    -webkit-transform: rotate(0) translate(-50%, -50%);
+  }
+  100% {
+    transform: rotate(360deg) translate(-50%, -50%);
+    -webkit-transform:rotate(360deg) translate(-50%, -50%)
+  }
+}
+@-webkit-keyframes loading {
+0% {
+    transform: rotate(0) translate(-50%, -50%);
+    -webkit-transform: rotate(0) translate(-50%, -50%);
+  }
+  100% {
+    transform: rotate(360deg) translate(-50%, -50%);
+    -webkit-transform:rotate(360deg) translate(-50%, -50%);
+  }
 }
 

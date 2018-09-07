@@ -1,8 +1,6 @@
 
 import "../css/admin.scss";
 (function (win, $) {
-  console.log('test');
-  
   class Login {
     constructor () {
       this.init();

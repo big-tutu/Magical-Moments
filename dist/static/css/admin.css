@@ -479,30 +479,30 @@ HTML, body {
     font-size: 24px; }
   .set-content .set-page > div {
     padding-left: 40px; }
-    .set-content .set-page > div form {
+    .set-content .set-page > div > form {
       margin-top: 20px; }
-      .set-content .set-page > div form ul li {
+      .set-content .set-page > div > form > ul > li {
         margin-bottom: 20px;
         width: 800px; }
-        .set-content .set-page > div form ul li > label {
+        .set-content .set-page > div > form > ul > li > label {
           line-height: 34px;
           vertical-align: top; }
-        .set-content .set-page > div form ul li .case {
+        .set-content .set-page > div > form > ul > li .case {
           display: inline-block;
           margin-left: 20px; }
-          .set-content .set-page > div form ul li .case .tip {
+          .set-content .set-page > div > form > ul > li .case .tip {
             margin: 5px 0 0 0;
             font-size: 12px;
             color: #a9a9a9; }
-          .set-content .set-page > div form ul li .case label {
+          .set-content .set-page > div > form > ul > li .case label {
             height: 34px;
             line-height: 34px; }
-            .set-content .set-page > div form ul li .case label span {
+            .set-content .set-page > div > form > ul > li .case label span {
               margin-left: 10px;
               vertical-align: middle; }
-        .set-content .set-page > div form ul li .shareImg, .set-content .set-page > div form ul li .waterMarkImg, .set-content .set-page > div form ul li .banners {
-          padding: 10px; }
-          .set-content .set-page > div form ul li .shareImg img, .set-content .set-page > div form ul li .waterMarkImg img, .set-content .set-page > div form ul li .banners img {
+        .set-content .set-page > div > form > ul > li .shareImg, .set-content .set-page > div > form > ul > li .waterMarkImg, .set-content .set-page > div > form > ul > li .banners {
+          margin-top: 20px; }
+          .set-content .set-page > div > form > ul > li .shareImg img, .set-content .set-page > div > form > ul > li .waterMarkImg img, .set-content .set-page > div > form > ul > li .banners img {
             width: 200px; }
 
 .set-content .set-wx_share {
