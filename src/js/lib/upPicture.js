@@ -24,7 +24,9 @@ $.fn.UploadImg = function (o) {
         
       });
     } else {
-      uploadFn(files['0'], o);
+      uploadFn(files['0'], o, {
+        corpId: o.corpId
+      });
     } 
   });
 
@@ -60,10 +62,10 @@ $.fn.UploadImg = function (o) {
       if (o.multiple) {
         formData.append('media', file);
         formData.append('mediaType', flag ? 1 : 2);
-        formData.append('corpId', params.corpId);
       } else {
         formData.append('picture', file);
       }
+      formData.append('corpId', params.corpId);
       
       $.ajax({
         url: o.url,
