@@ -217,29 +217,29 @@ aside.turnBox p { color: #fff;}
         box-sizing: border-box;
       }
       .message {
+        position: relative;
         padding: 32px;
         box-sizing: border-box;
         text-align: left;
-        line-height: 100px;
+        line-height: 40px;
         font-family: Nike;
         color: #000000;
-          h4 {
+        font-size: 28px;
+        .messages-content {
+          h1,h2,h4,h5,h6,h4 {
             font-size: 32px;
           }
-        
-        p {
-          font-size: 28px;
-          letter-spacing: 0;
-          text-align: justify;
-          // line-height: 40px;
+          p {
+            letter-spacing: 0;
+            text-align: justify;
+            margin-top: 16px;
+          }
+          img {
+            margin: 30px;
+            width: calc(100% - 60px);
+          }
         }
-        p:nth-child(1) {
-          margin-bottom: 50px;
-
-        }
-        img {
-          width: 100%;
-        }
+          
       }
       .close {
         position: absolute;
@@ -709,7 +709,7 @@ aside.turnBox p { color: #fff;}
     left: 30px;
     width: 690px;
     bottom: 30px;
-    padding: 10px 0;
+    padding: 20px 0;
     color: #fff;
     background: #04be02;
     font-size: 34px;

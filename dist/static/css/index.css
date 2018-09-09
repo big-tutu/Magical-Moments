@@ -258,22 +258,23 @@ aside.turnBox p {
         text-align: left;
         box-sizing: border-box; }
       .container .page-rules .rules-content .message {
+        position: relative;
         padding: 32px;
         box-sizing: border-box;
         text-align: left;
-        line-height: 100px;
+        line-height: 40px;
         font-family: Nike;
-        color: #000000; }
-        .container .page-rules .rules-content .message h4 {
+        color: #000000;
+        font-size: 28px; }
+        .container .page-rules .rules-content .message .messages-content h1, .container .page-rules .rules-content .message .messages-content h2, .container .page-rules .rules-content .message .messages-content h4, .container .page-rules .rules-content .message .messages-content h5, .container .page-rules .rules-content .message .messages-content h6, .container .page-rules .rules-content .message .messages-content h4 {
           font-size: 32px; }
-        .container .page-rules .rules-content .message p {
-          font-size: 28px;
+        .container .page-rules .rules-content .message .messages-content p {
           letter-spacing: 0;
-          text-align: justify; }
-        .container .page-rules .rules-content .message p:nth-child(1) {
-          margin-bottom: 50px; }
-        .container .page-rules .rules-content .message img {
-          width: 100%; }
+          text-align: justify;
+          margin-top: 16px; }
+        .container .page-rules .rules-content .message .messages-content img {
+          margin: 30px;
+          width: calc(100% - 60px); }
       .container .page-rules .rules-content .close {
         position: absolute;
         left: 50%;
@@ -369,7 +370,7 @@ aside.turnBox p {
 
 .hint {
   position: fixed;
-  z-index: 102;
+  z-index: 302;
   left: 50%;
   top: 50%;
   width: 300px;
@@ -398,7 +399,7 @@ aside.turnBox p {
 
 .videoContainer {
   position: absolute;
-  z-index: 201;
+  z-index: 220;
   top: 0px;
   left: 0px;
   width: 100%;
@@ -419,7 +420,7 @@ aside.turnBox p {
     top: 50%;
     left: 50%;
     background-color: red;
-    z-index: 1000; }
+    z-index: 260; }
 
 i.icon-loading {
   position: absolute;
@@ -510,7 +511,7 @@ i.icon-loading {
   height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 0.55);
-  z-index: 1000;
+  z-index: 300;
   display: none; }
   .confirm-mask .mask-contaner {
     position: absolute;
@@ -586,23 +587,27 @@ i.icon-loading {
   display: none; }
   .upload-preview > p {
     font-size: 34px;
-    margin: 50px 0 30px 0; }
+    margin: 50px 0 30px 0;
+    padding-left: 13px; }
   .upload-preview .select-img .img {
     display: inline-block;
     height: 200px;
     width: 200px;
     position: relative;
     background-color: rgba(25, 31, 37, 0.08);
-    margin: 13px; }
+    margin: 13px 14px 13px 13px; }
+    .upload-preview .select-img .img > span {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      overflow: hidden; }
     .upload-preview .select-img .img img {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       -webkit-transform: translate(-50%, -50%);
-      max-width: 200px;
-      max-height: 200px;
-      background: #04be02; }
+      width: 400px; }
     .upload-preview .select-img .img .delete {
       position: absolute;
       right: -15px;
@@ -632,11 +637,23 @@ i.icon-loading {
     left: 30px;
     width: 690px;
     bottom: 30px;
-    padding: 10px 0;
+    padding: 20px 0;
     color: #fff;
     background: #04be02;
     font-size: 34px;
     border-radius: 8px;
     text-align: center; }
+
+.is-img-uploading {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  z-index: 320; }
+  .is-img-uploading > p {
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 34px;
+    margin-top: 100px; }
 
 /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzdGF0aWMvY3NzL2luZGV4LmNzcyIsInNvdXJjZVJvb3QiOiIifQ==*/

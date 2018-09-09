@@ -85,6 +85,16 @@ const toast = {
   }
 };
 
+function timeFormdata(params) {
+  const time = new Date(params);
+  const year = time.getFullYear();
+  let mounth = time.getMonth();
+  let day = time.getDate();
+  mounth = mounth < 9 ? `0${mounth + 1}` : mounth + 1;
+  day = day < 10 ? `0${day}` : day;
+  return `${year}-${mounth}-${day}`;
+}
+
 
 
 
@@ -172,6 +182,8 @@ const toast = {
               } else {
                 $('.banners').html(`<img src=${res.data} alt="">`)
               }
+
+
             }
           },
           error: (res) => {
@@ -196,8 +208,11 @@ const toast = {
             }
           },
           success: (res, config) => {
-            if (config && (config.all - 1) === config.current){
+            console.log(config);
+            
+            if (config && (config.all - 1) === +config.current) {
               toast.success('上传完成');
+              this.getList();
             }
           },
           error: (err, config) => {
@@ -239,7 +254,7 @@ const toast = {
                 </div>
                 <div class="info">
                   <p><span>类型：</span><span>图片</span></p>
-                  <p><span>上传时间：</span><span>2018-20-30</span></p>
+                  <p><span>上传时间：</span><span>${timeFormdata(item.createTime)}</span></p>
                   <p><span>点赞数：</span><span class="like-count">${item.voteNum}</span><a class="j-change-like">修改</a></p>
                   <p class="handle">
                     <a class="j-down down">下载</a>
@@ -257,7 +272,7 @@ const toast = {
                 </div>
                 <div class="info">
                   <p><span>类型：</span><span>视频</span></p>
-                  <p><span>上传时间：</span><span>2018-20-30</span></p>
+                  <p><span>上传时间：</span><span>${timeFormdata(item.createTime)}</span></p>
                   <p><span>点赞数：</span><span class="like-count">${item.voteNum}</span><a class="j-change-like">修改</a></p>
                   <p class="handle">
                     <a class="j-down down">下载</a>
@@ -521,6 +536,7 @@ const toast = {
         const $target = $(e.target);
         const $content = $target.closest('.set-page');
         const pageId = $content.data('pageid');
+        console.log(pageId);
         
         let sendData = {};
         if (pageId === 1) {

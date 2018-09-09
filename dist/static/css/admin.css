@@ -40,6 +40,9 @@ ul {
 .icon-xiala:before {
   content: "\E615"; }
 
+.icon-loading:before {
+  content: "\E68F"; }
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
@@ -509,6 +512,44 @@ HTML, body {
   display: block; }
 
 #editor {
-  width: 500px; }
+  width: 700px; }
+
+.loading-cmp {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  z-index: 200; }
+  .loading-cmp i.icon-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    z-index: 201;
+    color: #0084ff;
+    font-size: 30px;
+    animation: loading 2.5s linear infinite;
+    -webkit-animation: loading 2.5s linear infinite;
+    transform-origin: 0 0;
+    -webkit-transform-origin: 0 0; }
+
+@keyframes loading {
+  0% {
+    transform: rotate(0) translate(-50%, -50%);
+    -webkit-transform: rotate(0) translate(-50%, -50%); }
+  100% {
+    transform: rotate(360deg) translate(-50%, -50%);
+    -webkit-transform: rotate(360deg) translate(-50%, -50%); } }
+
+@-webkit-keyframes loading {
+  0% {
+    transform: rotate(0) translate(-50%, -50%);
+    -webkit-transform: rotate(0) translate(-50%, -50%); }
+  100% {
+    transform: rotate(360deg) translate(-50%, -50%);
+    -webkit-transform: rotate(360deg) translate(-50%, -50%); } }
 
 /*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzdGF0aWMvY3NzL2FkbWluLmNzcyIsInNvdXJjZVJvb3QiOiIifQ==*/

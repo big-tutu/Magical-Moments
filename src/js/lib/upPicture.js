@@ -11,11 +11,17 @@ $.fn.UploadImg = function (o) {
         o.showTips.error('每次最多上传9个文件');
         fileArr = fileArr.slice(0, 9);
       }
-
+      (function () {
+        
+      })()
       fileArr.forEach(function (cur)  {
-        uploadFn(files[cur], o, {
+
+        (function (file, o, params, config) {
+          uploadFn(file, o, params, config)
+        })(files[cur], o, {
           corpId: o.corpId
-        }, {all: fileArr.length, current: cur});
+        }, { all: fileArr.length, current: cur })
+        
       });
     } else {
       uploadFn(files['0'], o);

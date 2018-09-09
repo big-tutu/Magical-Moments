@@ -1,6 +1,6 @@
 
-import VConsole from 'vconsole/dist/vconsole.min.js';
-let vConsole = new VConsole();
+// import VConsole from 'vconsole/dist/vconsole.min.js';
+// let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   win.canUploadLength = 9;
@@ -26,38 +26,56 @@ import "../css/style.scss";
       };
       this.init();
     }
-    async init() {
-      await $.get('/api/getConfig', {corpId: this.corpId}, res => {
+    init() {
+      $.get('/api/getConfig', {
+        corpId: this.corpId,
+        path: window.location.href
+      }).then(res => {
         if (res.ret === 0) {
           const data = res.data;
           this.mode = data.mode;
           this.config = data;
-            // 回填站点介绍信息
-          $('.page-rules .message').html(data.accountDesc || `<p>No description</p>`)
-          
+          // 回填站点介绍信息
+          $('.page-rules .message .messages-content').html(data.accountDesc || `<p>No description</p>`)
+          this.wxJssdk();
+          this.main();
+          this.renderBanner();
+          this.prefix();
+          this.waterfallsFlow();
+          this.previewPic();
+          this.handleLike();
+          this.showTip();
+          this.scrollLoadMore();
+          this.handleConfirm();
+          this.uploadPageEvents();
+          this.getList({
+            page: 1,
+            patten: 1,
+            count: 20
+          }, 'home');
         } else {
           this.showTost('网络出现故障');
         }
-      });
+      })
 
 
 
-      this.wxJssdk();
-      this.main();
-      this.renderBanner();
-      this.prefix();
-      this.waterfallsFlow();
-      this.previewPic();
-      this.handleLike();
-      this.showTip();
-      this.scrollLoadMore();
-      this.handleConfirm();
-      this.uploadPageEvents();
-      this.getList({
-        page: 1,
-        patten: 1,
-        count: 20
-      }, 'home');
+      // this.wxJssdk();
+      // this.main();
+      // this.renderBanner();
+      // this.prefix();
+      // this.waterfallsFlow();
+      // this.previewPic();
+      // this.handleLike();
+      // this.showTip();
+      // this.scrollLoadMore();
+      // this.handleConfirm();
+      // this.uploadPageEvents();
+      // this.getList({
+      //   page: 1,
+      //   patten: 1,
+      //   count: 20
+      // }, 'home');
     }
     main() {
       const self = this;
@@ -97,49 +115,49 @@ import "../css/style.scss";
       // 上传图片
 
       $('#fileImage').UploadImg({
-        url: this.api.UPLOAD,
-        width: '750',
         type: 'img',
         showTost: this.showTost,
-        quality: '0.8',
-        corpId: self.corpId,
         mixsize: 1024 * 1024 * 3,
         imgType: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
-
-        sendBefore: (config) => {
-
+        onChange: (fileArr, o, config) => {
           $uploadPreview.show();
           $('.img-add.img').remove();
-          $selectWrapper.append(
-            `<div class="img img${config.curId}">
-              <span>
-                <img class="image" src="" alt="">
-              </span>
-              <a class="delete j-delete">+</a>
-              <i class="iconfont icon-loading style="color: rgba(0, 0, 0, .85)""></i>
-            </div>`
-          )
-
-        },
-        success: (res, config) => {
-          $selectWrapper.find(`.img${config.curId}`).attr('data-id', res.data.id).find('img').attr('src', res.data.cover);
-          self.currentImages.push(res.data);
-          // 所有上传完成提示上传成功并移除loading
-          if ((+config.current + 1) === config.all) {
-            this.showTost('上传成功');
-            $selectWrapper.find('.iconfont').remove();
-            if (self.currentImages.length < 9) {
-              $selectWrapper.append(`
+          let flag = 0;
+          fileArr.forEach(function (cur, idx) {
+            if(!cur) return;
+            const reader = new FileReader();
+            reader.onload = function () {
+              const result = this.result;   //result为data url的形式
+              $selectWrapper.append(
+                `<div class="img img${cur.id}" data-id="${cur.id}">
+                  <span>
+                    <img class="image" src="${result}" alt="">
+                  </span>
+                  <a class="delete j-delete">+</a>
+                  <i class="iconfont icon-loading style="color: rgba(0, 0, 0, .85)""></i>
+                </div>`
+              );
+            }
+            reader.onloadend = function () {
+              $selectWrapper.find('.iconfont').remove();
+              flag++;
+              if (self.currentImages.length < 9) {
+                self.currentImages.push(cur);
+              }
+              if (flag === fileArr.length && self.currentImages.length < 9) {
+               
+                flag = 0;
+                $selectWrapper.append(`
                 <div class="img img-add">
                   <a class="j-delete"><i class="iconfont icon-Addx"></i></a>
                 </div>
-              `)
+              `);
+              }
             }
-          }
+            reader.readAsDataURL(cur.file);
+          });
+
         },
-        error (res) {
-          this.showTost('上传出现错误');
-        }
       });
 
       // 上传视频
@@ -152,6 +170,9 @@ import "../css/style.scss";
         corpId: self.corpId,
         videoSize: 1024 * 1024 * 50,
         videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
+        sendBefore: () => {
+          this.showTost('正在上传文件...');
+        },
         success: (res) => {
           if (res.ret === 0) {
             this.showTost('上传成功');
@@ -167,6 +188,85 @@ import "../css/style.scss";
 
         }
       });
+    }
+
+    // 上传确认页面事件
+    uploadPageEvents() {
+      const self = this;
+      const $uploadPreview = $('.upload-preview');
+      // 确认上传
+      $uploadPreview.find('.upload-ok').click(() => {
+
+        const options =  {
+          url: this.api.UPLOAD,
+          corpId: self.corpId,
+          type: 'img',
+          showTost: this.showTost,
+          sendBefore: (file, config) => {
+            $('body').append(`
+            <div class="is-img-uploading">
+              <i class="iconfont icon-loading" style="color: rgba(0, 0, 0, .85); z-index: 320"></i>
+              <p>图片上传中</p>
+            </div>`
+              );
+          },
+          success: (res, config) => {
+            self.page('home');
+            $uploadPreview.hide().find('.select-img').empty();
+            win.canUploadLength = 9;
+            self.currentImages = [];
+            $('.is-img-uploading').remove();
+            $uploadPreview.hide().find('.select-img').empty();
+          },
+          error(res) {
+            $('.is-img-uploading').remove();
+            this.showTost(res.msg || '上传出现错误');
+          }
+        }
+        self.currentImages.forEach((item, index) => {
+          uploadFn(item.file, options, { all: self.currentImages.length, cur: index});
+        });
+      });
+
+      // 删除或者添加
+      $uploadPreview.on('click', e => {
+        const $target = $(e.target);
+        // 确认操作
+        if ($target.hasClass('delete')) {
+          // 删除图片
+          const $parent = $target.closest('.img');
+          const id = $parent.data('id');
+          $parent.remove();
+          self.currentImages = self.currentImages.filter(item => item.id !== id);
+          win.canUploadLength = 9 - self.currentImages.length;
+
+          if ($uploadPreview.find('.img-add').length === 0) {
+            $uploadPreview.find('.select-img').append(`
+              <div class="img img-add">
+                <a class="j-delete"><i class="iconfont icon-Addx"></i></a>
+              </div> 
+            `);
+          }
+          // $.post(`/admin/api/media/${id}/delete`, {corpId: self.corpId});
+        } else if ($target.hasClass('iconfont')) {
+          // 新增图片
+          win.canUploadLength = 9 - self.currentImages.length;
+          $('#fileImage').trigger('click');
+        } else if ($target.hasClass('image')) {
+          const curUrl = $target.attr('src');
+          const urls = Array.from($uploadPreview.find('.image')).map(item => $(item).attr('src'));
+          if (typeof wx !== 'undefined') {
+            wx.previewImage({
+              current: curUrl,
+              urls: urls
+            });
+            return false;
+          }
+        }
+      });
+
+
+
     }
 
     // 图片瀑布流
@@ -553,7 +653,7 @@ import "../css/style.scss";
       const self = this;
       const bannerList = [
         {
-          imgUrl: '/static/imgs/banner.png',
+          imgUrl: self.config.bannerDetail,
           id: 1
         },
       ];
@@ -597,74 +697,6 @@ import "../css/style.scss";
       })
     }
 
-
-
-
-    // 上传确认页面事件
-    uploadPageEvents () {
-      const self = this;
-      const $uploadPreview = $('.upload-preview');
-
-      // 确认上传
-      $uploadPreview.find('.upload-ok').click(() => {
-        win.canUploadLength = 9;
-        self.currentImages = [];
-        $('body').append(`
-          <div class="is-img-uploading">
-            <i class="iconfont icon-loading" style="color: rgba(0, 0, 0, .85); z-index: 320"></i>
-            <p>图片上传中</p>
-          </div>`
-        )
-        self.page('home', () => {
-          $uploadPreview.hide().find('.select-img').empty();
-          win.canUploadLength = 9;
-          self.currentImages = [];
-          $('.is-img-uploading').remove();
-          $uploadPreview.hide().find('.select-img').empty();
-        });
-
-      });
-
-      // 删除或者添加
-      $uploadPreview.on('click', e => {
-        const $target = $(e.target);
-        // 确认操作
-        if ($target.hasClass('delete')) {
-          // 删除图片
-          const $parent = $target.closest('.img');
-          const id = $parent.data('id');
-          $parent.remove();
-          self.currentImages.pop();
-          win.canUploadLength = 9 - self.currentImages.length;
-
-          if ($uploadPreview.find('.img-add').length === 0) {
-            $uploadPreview.find('.select-img').append(`
-              <div class="img img-add">
-                <a class="j-delete"><i class="iconfont icon-Addx"></i></a>
-              </div> 
-            `);
-          }
-          $.post(`/admin/api/media/${id}/delete`, {corpId: self.corpId});
-        } else if ($target.hasClass('iconfont')) {
-          // 新增图片
-          win.canUploadLength = 9 - self.currentImages.length;
-          $('#fileImage').trigger('click');
-        } else if ($target.hasClass('image')) {
-          const curUrl = $target.attr('src');
-          const urls = Array.from($uploadPreview.find('.image')).map(item => $(item).attr('src'));
-          if (typeof wx !== 'undefined') {
-            wx.previewImage({
-              current: curUrl,
-              urls: urls
-            });
-            return false;
-          }
-        }
-      });
-
-
-
-    }
 
 
   }

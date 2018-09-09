@@ -51,6 +51,12 @@ module.exports = {
       template: './system_set.html',
       chunks: ['admin']  // 指定需要引入的js
     }),
+    new HtmlWebpackPlugin({
+      inject: false,
+      filename: '404.html',
+      hash: false,
+      template: './404.html',
+    }),
 
 
     new webpack.NamedModulesPlugin(),
@@ -69,36 +75,47 @@ module.exports = {
     // adminSass
   ],
   module: {
-    rules: [{
-      test: /\.scss$/,
-      use: extractSass.extract({
-        use: [{
-          loader: "css-loader"
-        }, {
-          loader: "sass-loader"
-        }],
-        // 在开发环境使用 style-loader
-        fallback: "style-loader"
-      })
-    },
-    {
-      test: /\.(png|jpg|gif|jpeg)/,
-      use: [
-        {
-          loader: 'file-loader',
+    rules: [
+      {
+        test: /\.scss$/,
+        use: extractSass.extract({
+          use: [{
+            loader: "css-loader"
+          }, {
+            loader: "sass-loader"
+          }],
+          // 在开发环境使用 style-loader
+          fallback: "style-loader"
+        })
+      },
+      {
+        test: /\.(png|jpg|gif|jpeg)/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: "imgs/"
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(eot|svg|ttf|woff)\??.*/,
+        use: {
+          loader: "url-loader?name=fonts[name].[md5:hash:hex:7].[ext]"
+        }
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
           options: {
-            outputPath: "imgs/"
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/transform-runtime']
           }
         }
-      ]
-    },
-    {
-      test: /\.(eot|svg|ttf|woff)\??.*/,
-      use: {
-        loader: 'url-loader?name=fonts[name].[md5:hash:hex:7].[ext]'
       }
-    }
-    
     ]
   },
   devServer: {
