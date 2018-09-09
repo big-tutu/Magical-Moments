@@ -106,7 +106,6 @@ function timeFormdata(params) {
       this.currentPage = 1;
       this.totalCount = null;
       this.isList = $('#listPage').length === 1;
-      // this.mode = 1;
       this.pageId = 0;
       this.config = {};
       this.corpId = window.location.pathname.split('/')[2];
@@ -117,21 +116,9 @@ function timeFormdata(params) {
         if (res.ret === 0) {
           const mode = res.data.mode;
           this.config = res.data;
-          // this.mode = mode;
-          // $(`.options li[data-mode="${mode}"]`).find('a').addClass('active');
           this.handleDataBackFill(res.data);
         } else {
           toast.error('网络错误，获取业务模式失败');
-        }
-      });
-      $.get('/admin/api/getData', {corpId: this.corpId}).then(res => {
-        if (res && res.ret === 0) {
-          $('.btn-gropu').append(`<p class="baseData">共
-          <span class="count-img">${res.pictureCount}</span>张图片,
-          <span class="count-video">${res.videoCoun}</span>个视频,
-          <span class="view-count">${res.accessCount}</span>浏览量</p>`)
-        } else {
-          toast.error(res && res.msg || '网络异常，刷新页面');
         }
       });
       this.bindEvents();
@@ -140,6 +127,16 @@ function timeFormdata(params) {
       this.slideEvents();
       this.uploadImage();
       if (this.isList) {
+        $.get('/admin/api/getData', { corpId: this.corpId }).then(res => {
+          if (res && res.ret === 0) {
+            $('.btn-group').append(`<p class="baseData">
+          图片: <span class="count-img">${res.data.pictureCount}</span> &nbsp;&nbsp;&nbsp; 
+          视频: <span class="count-video">${res.data.videoCount}</span> &nbsp;&nbsp;&nbsp;
+          浏览量: <span class="view-count">${res.data.accessCount}</span></p>`)
+          } else {
+            toast.error(res && res.msg || '网络异常，刷新页面');
+          }
+        });
         this.getList();
         this.deleteItem();
         this.changeLikeCount();

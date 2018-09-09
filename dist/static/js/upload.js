@@ -138,20 +138,28 @@ function _compress(blob, file) {
     } else {
       var filepre = file.type;
     }
-    // if (o.url) {
-    //   _ajaximg(base64, filepre);
-    // } else {
-    //   o.success(base64, filepre);
-    // }
-
-
-    return {
-      base: base64,
-      filepre: filepre
+    if (o.url) {
+      _ajaximg(base64, filepre);
+    } else {
+      o.success(base64, filepre);
     }
   };
 }
 
 function _ajaximg(base64, type, file) {
-  
+  $.post(o.url, {
+    media: base64
+  }, function (res) {
+    o.success(res);
+  }, 'form-data');
+  var formData = new FormData();
+  formData.append('media', type);
+  $.ajax({
+    type: 'post',
+    url: o.url,
+    data: formData,
+    success: (res) => {
+      o.success(res);
+    }
+  })
 }
