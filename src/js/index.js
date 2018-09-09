@@ -10,7 +10,7 @@ import "../css/style.scss";
       this.uploadType = {
         imgs: ''
       }
-      this.corpId = $('.container').data('corpid');
+      this.corpId = $('.container').data('corpid') || window.location.pathname.split('/')[2];
       this.currentImages = [];
       this.config = {};
       this.loading = false;

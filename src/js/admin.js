@@ -113,7 +113,7 @@ function timeFormdata(params) {
       this.init();
     }
     async init () {
-      await $.get('/admin/api/getConfig', res => {
+      await $.get('/admin/api/getConfig', { corpId: this.corpId }, res => {
         if (res.ret === 0) {
           const mode = res.data.mode;
           this.config = res.data;
@@ -122,6 +122,16 @@ function timeFormdata(params) {
           this.handleDataBackFill(res.data);
         } else {
           toast.error('网络错误，获取业务模式失败');
+        }
+      });
+      $.get('/admin/api/getData', {corpId: this.corpId}).then(res => {
+        if (res && res.ret === 0) {
+          $('.btn-gropu').append(`<p class="baseData">共
+          <span class="count-img">${res.pictureCount}</span>张图片,
+          <span class="count-video">${res.videoCoun}</span>个视频,
+          <span class="view-count">${res.accessCount}</span>浏览量</p>`)
+        } else {
+          toast.error(res && res.msg || '网络异常，刷新页面');
         }
       });
       this.bindEvents();
@@ -167,7 +177,6 @@ function timeFormdata(params) {
           quality: '0.8',
           mixsize: 1024 * 1024 * 3,
           videoSize: 1024 * 1024 * 50,
-          videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
           type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
           sendBefore: () => {
 
@@ -182,8 +191,8 @@ function timeFormdata(params) {
               } else {
                 $('.banners').html(`<img src=${res.data} alt="">`)
               }
-
-
+            } else {
+              toast.error(res.msg || '上传出现错误');
             }
           },
           error: (res) => {
@@ -197,7 +206,8 @@ function timeFormdata(params) {
           showTips: toast,
           multiple: this.isList,
           quality: '0.8',
-          corpId: self.corpId,
+          corpId: 'N83CXg2Arlw',
+          // corpId: self.corpId,
           mixsize: 1024 * 1024 * 3,
           videoSize: 1024 * 1024 * 50,
           videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
@@ -208,8 +218,9 @@ function timeFormdata(params) {
             }
           },
           success: (res, config) => {
-            console.log(config);
-            
+            if (res.ret !== 0) {
+              toast.error(res.msg);
+            }
             if (config && (config.all - 1) === +config.current) {
               toast.success('上传完成');
               this.getList();
@@ -241,6 +252,7 @@ function timeFormdata(params) {
       $.get(url, sendData, res => {
         loading.hide();
         if (res.ret === 0) {
+          
           const data = res.data.dataList;
           self.totalCount = res.data.totalCount;
           self.currentPage = sendData.page;
@@ -285,10 +297,12 @@ function timeFormdata(params) {
 
           $wrapper.html(template.join(''));
           window.scrollTo(0, 0);
-          self.pagination({
-            current: self.currentPage,
-            totalData: self.totalCount,
-          });
+          if (res.data.totalCount > sendData.count) {
+            self.pagination({
+              current: self.currentPage,
+              totalData: self.totalCount,
+            });
+          }
         } else {
           toast.error(res.msg || '网络错误，稍后重试');
         }
