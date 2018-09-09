@@ -19,7 +19,6 @@ import "../css/style.scss";
       this.currentPage = 1;
       this.api = {
         LIST: '/api/media/list',
-        WX_CONFIG: '/api/getConfig',
         UPLOAD: '/api/media/upload',
         MAKE_LOVE: '/api/media/love',
         BANNER_DATA: '/api/banner/data'

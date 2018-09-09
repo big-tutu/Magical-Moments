@@ -21,10 +21,10 @@ import "../css/admin.scss";
             password,
             corpId
           }, res => {
-            if (res.ret === 0) {
+            if (res && res.ret === 0) {
               window.location.href = res.data;
             } else {
-              alert(res.msg || '网络发生错误，请稍后重试');
+              alert(res && res.msg || '网络发生错误，请稍后重试');
             }
           })
         }
