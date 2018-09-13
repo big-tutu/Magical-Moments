@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 const extractSass = new ExtractTextPlugin("static/css/[name].css"); // cssc处理
@@ -24,7 +24,7 @@ module.exports = {
       filename: 'index.html',
       inject: true,
       hash: true,
-      template: './index.html',
+      template: './src/pages/index.html',
       chunks: ['index']
     }),
     new HtmlWebpackPlugin({
@@ -32,7 +32,7 @@ module.exports = {
       inject: true,
       filename: 'login.html',
       hash: true,
-      template: './login.html',
+      template: './src/pages/login.html',
       chunks: ['login']
     }),
     new HtmlWebpackPlugin({
@@ -40,7 +40,7 @@ module.exports = {
       inject: true,
       filename: 'list.html',
       hash: true,
-      template: './list.html',
+      template: './src/pages/list.html',
       chunks: ['admin']  // 指定需要引入的js
     }),
     new HtmlWebpackPlugin({
@@ -48,14 +48,14 @@ module.exports = {
       inject: true,
       filename: 'system_set.html',
       hash: true,
-      template: './system_set.html',
+      template: './src/pages/system_set.html',
       chunks: ['admin']  // 指定需要引入的js
     }),
     new HtmlWebpackPlugin({
       inject: false,
       filename: '404.html',
       hash: false,
-      template: './404.html',
+      template: './src/pages/404.html',
     }),
 
 
@@ -72,7 +72,6 @@ module.exports = {
       }
     ]),
     extractSass,
-    // adminSass
   ],
   module: {
     rules: [
@@ -120,8 +119,8 @@ module.exports = {
   },
   devServer: {
     contentBase: './dist',
-    host: '192.168.1.100',
-    // host: '192.168.123.70',
+    // host: '192.168.1.100',
+    host: '192.168.123.70',
     port: 2000,
     hot: true,
     proxy: {

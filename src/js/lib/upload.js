@@ -2,8 +2,15 @@
 $.fn.UploadImg = function (o) {
   this.change(function (e) {
     const files = this.files;
+
+
+    // input 触发上传
+    // 如果是图片
     if (o.type === 'img') {
       let fileArr = Object.keys(files);
+
+
+      // 图片大小格式判断，数据格式化
       fileArr = fileArr.map(function(cur, idx) {
         const curId = parseInt(Math.random() * 10000);
         const file = files[cur];
@@ -13,37 +20,45 @@ $.fn.UploadImg = function (o) {
             id: curId,
           }
         } else {
-          o.showTost('图片尺寸过大大或格式不符');
+          o.showToast('图片尺寸过大大或格式不符');
         } 
       });
+
+      // 当前可添加的数量
       fileArr = fileArr.slice(0, window.canUploadLength);
-      const lastItem = fileArr.pop();
-      fileArr.push(lastItem);
-      o.onChange(fileArr, o, lastItem);
+      o.onChange(fileArr);
+      
       this.value = '';
     } else {
+
+      // 视频则直接上传
       uploadFn(files['0'], o);
     } 
   });
 };
 
-
+/**
+ * 
+ * @param {*} file 上传的文件
+ * @param {*} o 上传需要配置项，
+ * @param {*} config  一些判断参数，
+ */
 function uploadFn(file, o, config) {
   const $progress = $('.progress');
   const size = file.size;
   const mediaName = file.name;
   if (o.type === 'video' && size >= o.videoSize) {
-    o.showTost(`视频不能超出40M`);
+    o.showToast(`视频不能超出40M`);
     this.value = '';
     return;
   } else if (o.type === 'video' && o.videoType.indexOf(file.type) < 0) {
     o.error(o.type);
-    o.showTost(`请上传mp4格式的视频`);
+    o.showToast(`请上传mp4格式的视频`);
     this.value = '';
     return;
   } else {
 
-
+    // formData 上传
     var formData = new FormData();
     formData.append('media', file);
     formData.append('mediaType', o.type === 'img' ? 1 : 2);

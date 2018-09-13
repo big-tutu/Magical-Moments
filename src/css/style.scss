@@ -24,6 +24,8 @@ img { width: 100%; -webkit-touch-callout: none;}
   -webkit-overflow-scrolling: touch;
 }
 
+
+// 定义 Nike 字体
 @font-face {
   font-family: 'Nike';
   src: url('./fonts/TradeGothicforNike365-BdCn_2.ttf');
@@ -32,7 +34,6 @@ img { width: 100%; -webkit-touch-callout: none;}
 
 
 // iconfont
-
 @font-face {font-family: "iconfont";
   src: url('./fonts/iconfont.eot?t=1533440013344'); /* IE9*/
   src: url('./fonts/iconfont.eot?t=1533440013344#iefix') format('embedded-opentype'), /* IE6-IE8 */
@@ -130,6 +131,8 @@ aside.turnBox p { color: #fff;}
   .active {
     display: block;
   }
+
+  // 首页
   .page-home {
     padding-top: 405px;
     .item {
@@ -155,6 +158,9 @@ aside.turnBox p { color: #fff;}
         }
     }
   }
+
+
+  // 点赞 top 10
   .page-rank {
     .rankList {
       padding: 16px;
@@ -178,6 +184,8 @@ aside.turnBox p { color: #fff;}
       height: 300px;
     }
   }
+
+  // 项目介绍页面
   .page-rules {
     position: absolute;
     z-index: 201;
@@ -216,6 +224,8 @@ aside.turnBox p { color: #fff;}
         text-align: left;
         box-sizing: border-box;
       }
+
+      // 对来自后台编辑输入的内容进行样式控制
       .message {
         position: relative;
         padding: 32px;
@@ -334,6 +344,11 @@ aside.turnBox p { color: #fff;}
     }
   }
 }
+
+
+
+
+// 转菊花 loading
 @keyframes loading {
   0% {
     transform: rotate(0) translate(-50%, -50%);
@@ -356,6 +371,7 @@ aside.turnBox p { color: #fff;}
 }
 
 
+// toast 提示样式
   .hint {
     position: fixed;
     z-index: 302;
@@ -386,6 +402,9 @@ aside.turnBox p { color: #fff;}
   .active.videoContainer {
     display: block;
   }
+
+
+  // 视频播放容器
   .videoContainer {
     position: absolute;
     z-index: 220;
@@ -447,7 +466,7 @@ aside.turnBox p { color: #fff;}
     -webkit-transform-origin: 0 0;
   }
 
-  // 进度条
+  // 视频上传进度条
   .progress {
     position: fixed;
     left: 0;
@@ -546,6 +565,9 @@ aside.turnBox p { color: #fff;}
   }
 }
 
+
+
+// 上传资源选择浮层
 .confirm-mask {
   position: fixed;
   left: 0;
@@ -631,6 +653,8 @@ aside.turnBox p { color: #fff;}
   }
 }
 
+
+// 上传图片预览组件
 .upload-preview {
   position: fixed;
   left: 0;

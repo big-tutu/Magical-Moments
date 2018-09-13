@@ -1,7 +1,7 @@
 import "../css/admin.scss";
 
 
-// 确认弹窗
+// 弹窗
 const dialog = {
   open (options) {
     $('body').css('overflow', 'hidden').append(
@@ -47,6 +47,7 @@ const dialog = {
   }
 };
 
+// 页面loading
 const loading = {
   show () {
     $('body').append(`
@@ -61,6 +62,7 @@ const loading = {
 }
 
 
+// 全局toast 提示
 const toast = {
   success (text) {
     $('body').append(`<div class="toast toast-success"><p>${text}</p></div>`);
@@ -85,6 +87,7 @@ const toast = {
   }
 };
 
+// 时间格式
 function timeFormdata(params) {
   const time = new Date(params);
   const year = time.getFullYear();
@@ -122,11 +125,11 @@ function timeFormdata(params) {
         }
       });
       this.bindEvents();
-      this.previePic();
       this.modeSeting();
       this.slideEvents();
       this.uploadImage();
       if (this.isList) {
+        // 列表页面
         $.get('/admin/api/getData', { corpId: this.corpId }).then(res => {
           if (res && res.ret === 0) {
             $('.btn-group').append(`<p class="baseData">
@@ -141,14 +144,12 @@ function timeFormdata(params) {
         this.deleteItem();
         this.changeLikeCount();
         this.downloadAll();
+        this.previePic();
       } else {
+        // 系统设置页面
         this.wangEditor();
         this.handleSystemConfig();
       }
-
-
-
-        
     }
 
     bindEvents () {
@@ -175,7 +176,6 @@ function timeFormdata(params) {
           corpId: self.corpId,
           // corpId: 'N83CXg2Arlw',
           mixsize: 1024 * 1024 * 3,
-          videoSize: 1024 * 1024 * 50,
           type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
           sendBefore: () => {
 
@@ -388,7 +388,7 @@ function timeFormdata(params) {
       })
     }
 
-    // 模式设置
+    // 业务模式设置
     modeSeting () {
       const self = this;
       $('.modle-seting ul.options').on('click', '.j-mode-item', (e) => {
@@ -432,6 +432,7 @@ function timeFormdata(params) {
     }
 
 
+    // 侧边栏交互
     slideEvents() {
       const $slideContainer = $('.photo-slide');
       const $lis = $('.photo-slide .level-2 li');
@@ -444,7 +445,7 @@ function timeFormdata(params) {
       });
     }
 
-
+    // 资源上传时间
     uploadImage () {
       const self = this;
       $('.btn-upload').on('click', e => {
@@ -472,11 +473,13 @@ function timeFormdata(params) {
       });
     }
 
-
+    // 编辑器
     wangEditor () {
       const self = this;
       const E = win.wangEditor;
       this.editor = new E('#editor');
+
+      // 配置项
       this.editor.customConfig = {
         menus:[
           'head',
@@ -541,7 +544,7 @@ function timeFormdata(params) {
     }
 
 
-    // 对系统配置的内容进行回填，保存
+    // 对系统配置修改保存
     handleSystemConfig () {
       const self = this;
       $('.j-save-config').click(e => {
@@ -550,7 +553,7 @@ function timeFormdata(params) {
         const $content = $target.closest('.set-page');
         const pageId = $content.data('pageid');
         console.log(pageId);
-        
+        // pageId 分别代表 微信分享设置、水印设置、站点描述和轮播图片设置
         let sendData = {};
         if (pageId === 1) {
           const wxShareDesc = $content.find('#wxShareDesc').val().trim();
@@ -646,10 +649,6 @@ function timeFormdata(params) {
       // 活动描述回填
       data.accountDesc && this.editor && this.editor.txt.html(data.accountDesc);
     }
-
-
-
-
 
   }
   $(function () {
