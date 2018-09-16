@@ -14,7 +14,7 @@ $.fn.UploadImg = function (o) {
       fileArr = fileArr.map(function(cur, idx) {
         const curId = parseInt(Math.random() * 10000);
         const file = files[cur];
-        if (file.size < o.mixsize || o.imgType.indexOf(file.type) > 0) {
+        if (file.size < o.mixsize && o.imgType.indexOf(file.type) > 0) {
           return {
             file: file,
             id: curId,
@@ -25,9 +25,11 @@ $.fn.UploadImg = function (o) {
       });
 
       // 当前可添加的数量
-      fileArr = fileArr.slice(0, window.canUploadLength);
+      fileArr = fileArr.filter(item => item && item).slice(0, window.canUploadLength);
+      if (fileArr.length === 0) {
+        return;
+      }
       o.onChange(fileArr);
-      
       this.value = '';
     } else {
 

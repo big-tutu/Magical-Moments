@@ -119,6 +119,9 @@ function timeFormdata(params) {
         if (res.ret === 0) {
           const mode = res.data.mode;
           this.config = res.data;
+          if (res.data.corpId !== 'N83CXg2Arlw') {
+            $('.create_site').hide();
+          }
           this.handleDataBackFill(res.data);
         } else {
           toast.error('网络错误，获取业务模式失败');
@@ -207,7 +210,7 @@ function timeFormdata(params) {
           quality: '0.8',
           // corpId: 'N83CXg2Arlw',
           corpId: self.corpId,
-          mixsize: 1024 * 1024 * 3,
+          mixsize: 1024 * 1024 * 2,
           videoSize: 1024 * 1024 * 50,
           videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
           type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
@@ -219,6 +222,7 @@ function timeFormdata(params) {
           success: (res, config) => {
             if (res.ret !== 0) {
               toast.error(res.msg);
+              return;
             }
             if (config && (config.all - 1) === +config.current) {
               toast.success('上传完成');

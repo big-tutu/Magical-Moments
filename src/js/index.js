@@ -1,6 +1,6 @@
 
-// import VConsole from 'vconsole/dist/vconsole.min.js';
-// let vConsole = new VConsole();
+import VConsole from 'vconsole/dist/vconsole.min.js';
+let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   win.canUploadLength = 9;
@@ -99,7 +99,7 @@ import "../css/style.scss";
       $('#fileImage').UploadImg({
         type: 'img',
         showToast: this.showToast,
-        mixsize: 1024 * 1024 * 3,
+        mixsize: 1024 * 1024 * 2,
         imgType: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
         onChange: (fileArr) => {
           $uploadPreview.show();
@@ -314,8 +314,21 @@ import "../css/style.scss";
           };
           self.hasMore = data.length === 20;
           const template = data.map(list => {
+
+
+            // const width = /width=([0-9]*)/.exec(list.path);
+            // let height = /height=([0-9]*)/.exec(list.path);
+            // height = height['1'] / (width['1'] / 335);
+            // console.log(height);
+            
+            
             if (list.mediaType === 1) {
-              return `<div class="item masonry-brick" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
+              const width = /width=([0-9]*)/.exec(list.path);
+              let height = /height=([0-9]*)/.exec(list.path);
+              if (height && width) {
+                height = height[1] / (width[1] / 335) + 3;
+              }
+              return `<div class="item masonry-brick" style="height: ${height ? height : 'auto'}px" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <img src="${list.path}">
                 <div class="pick-info">
                   <i class="type iconfont icon-tupianx"></i>

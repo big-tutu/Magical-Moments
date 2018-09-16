@@ -48,7 +48,7 @@ $.fn.UploadImg = function (o) {
       this.value = '';
       return;
     } else if (flag && size > o.mixsize) {
-      o.showTips.error(`图片大小不能大于3M`);
+      o.showTips.error(`图片大小不能大于2M`);
       this.value = '';
       return
     } else if (flag && o.type.indexOf(file.type) < 0) {

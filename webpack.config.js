@@ -10,7 +10,8 @@ module.exports = {
   entry: {  // 多入口
     'index': './src/js/index.js',
     'admin': './src/js/admin.js',
-    'login': './src/js/login.js'
+    'login': './src/js/login.js',
+    'create_site': './src/js/create_site.js'
   },
   output: {
     path: __dirname + "/dist/",
@@ -56,6 +57,13 @@ module.exports = {
       filename: '404.html',
       hash: false,
       template: './src/pages/404.html',
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      filename: 'create_site.html',
+      hash: true,
+      template: './src/pages/create_site.html',
+      chunks: ['create_site']  // 指定需要引入的js
     }),
 
 
@@ -119,8 +127,8 @@ module.exports = {
   },
   devServer: {
     contentBase: './dist',
-    // host: '192.168.1.100',
-    host: '192.168.123.70',
+    host: '192.168.1.100',
+    // host: '192.168.123.70',
     port: 2000,
     hot: true,
     proxy: {
