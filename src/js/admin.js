@@ -210,7 +210,7 @@ function timeFormdata(params) {
           quality: '0.8',
           // corpId: 'N83CXg2Arlw',
           corpId: self.corpId,
-          mixsize: 1024 * 1024 * 2,
+          mixsize: 1024 * 1024 * 3,
           videoSize: 1024 * 1024 * 50,
           videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
           type: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
@@ -556,7 +556,6 @@ function timeFormdata(params) {
         const $target = $(e.target);
         const $content = $target.closest('.set-page');
         const pageId = $content.data('pageid');
-        console.log(pageId);
         // pageId 分别代表 微信分享设置、水印设置、站点描述和轮播图片设置
         let sendData = {};
         if (pageId === 1) {

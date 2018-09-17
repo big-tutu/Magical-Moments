@@ -1,6 +1,6 @@
 
-import VConsole from 'vconsole/dist/vconsole.min.js';
-let vConsole = new VConsole();
+// import VConsole from 'vconsole/dist/vconsole.min.js';
+// let vConsole = new VConsole();
 import "../css/style.scss";
 (function (win, $) {
   win.canUploadLength = 9;
@@ -52,7 +52,7 @@ import "../css/style.scss";
           this.getList({
             page: 1,
             patten: 1,
-            count: 20
+            count: 10
           }, 'home');
         } else {
           this.showToast('网络出现故障');
@@ -99,7 +99,7 @@ import "../css/style.scss";
       $('#fileImage').UploadImg({
         type: 'img',
         showToast: this.showToast,
-        mixsize: 1024 * 1024 * 2,
+        mixsize: 1024 * 1024 * 3,
         imgType: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
         onChange: (fileArr) => {
           $uploadPreview.show();
@@ -272,7 +272,7 @@ import "../css/style.scss";
       $activePage.find('.preview').html('');
       this.getList({
         page: 1,
-        count: active === 'home' ? 20 : 10,
+        count: active === 'home' ? 10 : 10,
         patten: active === 'home' ? 1 : 2
       }, active, cb && cb);
     }
@@ -309,10 +309,10 @@ import "../css/style.scss";
         if (res.ret === 0) {
           const data = res.data.dataList;
           // const data = [];
-          if (data.length < 20) {
+          if (data.length < 10) {
             this.hasMore = false;
           };
-          self.hasMore = data.length === 20;
+          self.hasMore = data.length === 10;
           const template = data.map(list => {
 
 
@@ -629,12 +629,12 @@ import "../css/style.scss";
         const scrollH = $target.scrollTop();
         const distance = contentH - scrollH;
         let currentPage = self.currentPage;
-        if (distance < 1800 && !self.loading && self.hasMore) {
+        if (distance < 1200 && !self.loading && self.hasMore) {
           currentPage += 1;
           self.currentPage = currentPage;
           self.getList({
             page: currentPage,
-            count: 20,
+            count: 10,
             patten: 1
           }, 'home');
         }

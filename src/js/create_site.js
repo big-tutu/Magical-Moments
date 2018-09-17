@@ -218,7 +218,7 @@ function timeFormdata(params) {
               <td><a href="${item.mobileUrl}" target="blank">${item.mobileUrl}</a></td>
               <td><a href="${item.adminUrl}" target="blank">${item.adminUrl}</a></td>
               <td>${time}</td>
-              <td><a class="delete-account" data-id="${item.corpId}" data-status="${item.status === 1 ? 0 : 1}">${item.corpId === 1 ? '' : item.status === 1 ? '禁用' : '启用'}</a></td>
+              <td><a class="delete-account" data-id="${item.corpId}" data-status="${item.status === 1 ? 0 : 1}">${item.status === 1 ? '禁用' : '启用'}</a></td>
             </tr>`);
         });
 
@@ -254,7 +254,6 @@ function timeFormdata(params) {
 
   $(function () {
     new CreateSite();
-    console.log('rest');
     
   });
 })(window, jQuery)

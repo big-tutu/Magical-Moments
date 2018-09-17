@@ -39,7 +39,7 @@ $.fn.UploadImg = function (o) {
     const mediaName = file.name;
     const flag = patt.test(mediaName);
     if (!flag && size >= o.videoSize) {
-      o.showTips.error(`视频不能超出40M`);
+      o.showTips.error(`视频不能超出50M`);
       this.value = '';
       return;
     } else if (!flag && o.videoType.indexOf(file.type) < 0) {
@@ -48,7 +48,7 @@ $.fn.UploadImg = function (o) {
       this.value = '';
       return;
     } else if (flag && size > o.mixsize) {
-      o.showTips.error(`图片大小不能大于2M`);
+      o.showTips.error(`图片大小不能大于3M`);
       this.value = '';
       return
     } else if (flag && o.type.indexOf(file.type) < 0) {

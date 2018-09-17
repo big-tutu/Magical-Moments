@@ -20,7 +20,7 @@ $.fn.UploadImg = function (o) {
             id: curId,
           }
         } else {
-          o.showToast('图片尺寸过大大或格式不符');
+          o.showToast('图片尺寸大于3M或格式不符');
         } 
       });
 
