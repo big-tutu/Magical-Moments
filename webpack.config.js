@@ -7,7 +7,6 @@ const webpack = require('webpack');
 
 const extractSass = new ExtractTextPlugin("static/css/[name].css"); // cssc处理
 module.exports = {
-  mode: 'development',
   entry: {  // 多入口
     'index': './src/js/index.js',
     'admin': './src/js/admin.js',
