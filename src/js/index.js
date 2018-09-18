@@ -187,11 +187,11 @@ import "../css/style.scss";
           showToast: this.showToast,
           sendBefore: (file, config) => {
             $('body').append(`
-            <div class="is-img-uploading">
-              <i class="iconfont icon-loading" style="color: rgba(0, 0, 0, .85); z-index: 320"></i>
-              <p>图片上传中</p>
-            </div>`
-              );
+              <div class="is-img-uploading">
+                <i class="iconfont icon-loading" style="color: #fff; z-index: 320"></i>
+                <p>图片上传中</p>
+              </div>`
+            );
           },
           success: (res, config) => {
             self.page('home'); // 跳转
@@ -327,6 +327,7 @@ import "../css/style.scss";
               let height = /height=([0-9]*)/.exec(list.path);
               if (height && width) {
                 height = height[1] / (width[1] / 335) + 3;
+                height = height < 100 ? 100 : height;
               }
               return `<div class="item masonry-brick" style="height: ${height ? height : 'auto'}px" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <img src="${list.path}">
@@ -682,7 +683,7 @@ import "../css/style.scss";
       });
     }
 
-    // 视频类型确认
+    // 上传类型确认
     handleConfirm () {
       const $mask = $('.confirm-mask');
       const $container = $mask.find('.mask-contaner');
