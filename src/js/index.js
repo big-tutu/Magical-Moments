@@ -26,6 +26,8 @@ import "../css/style.scss";
       this.init();
     }
     init() {
+
+      // 获取配置的基本数据，微信分享，站点模式，
       $.get('/api/getConfig', {
         corpId: this.corpId,
         path: window.location.href
@@ -50,31 +52,13 @@ import "../css/style.scss";
           this.getList({
             page: 1,
             patten: 1,
-            count: 20
+            count: 10
           }, 'home');
         } else {
-          this.showTost('网络出现故障');
+          this.showToast('网络出现故障');
         }
       })
 
-
-
-      // this.wxJssdk();
-      // this.main();
-      // this.renderBanner();
-      // this.prefix();
-      // this.waterfallsFlow();
-      // this.previewPic();
-      // this.handleLike();
-      // this.showTip();
-      // this.scrollLoadMore();
-      // this.handleConfirm();
-      // this.uploadPageEvents();
-      // this.getList({
-      //   page: 1,
-      //   patten: 1,
-      //   count: 20
-      // }, 'home');
     }
     main() {
       const self = this;
@@ -112,16 +96,17 @@ import "../css/style.scss";
 
 
       // 上传图片
-
       $('#fileImage').UploadImg({
         type: 'img',
-        showTost: this.showTost,
+        showToast: this.showToast,
         mixsize: 1024 * 1024 * 3,
         imgType: 'image/png,image/jpg,image/jpeg,image/pjpeg,image/gif,image/bmp,image/x-png',
-        onChange: (fileArr, o, config) => {
+        onChange: (fileArr) => {
           $uploadPreview.show();
-          $('.img-add.img').remove();
-          let flag = 0;
+          $('.img-add.img').remove(); // 移除 添加 图标
+          let flag = 0; // 全部图片加载完毕flag
+
+          // 图片预览操作
           fileArr.forEach(function (cur, idx) {
             if(!cur) return;
             const reader = new FileReader();
@@ -138,13 +123,13 @@ import "../css/style.scss";
               );
             }
             reader.onloadend = function () {
-              $selectWrapper.find('.iconfont').remove();
+              $selectWrapper.find('.iconfont').remove(); // 图片加载完毕移除loading
               flag++;
               if (self.currentImages.length < 9) {
                 self.currentImages.push(cur);
               }
+              // 本次添加完成，并且多次添加的数量不足9张，保留添加按钮
               if (flag === fileArr.length && self.currentImages.length < 9) {
-               
                 flag = 0;
                 $selectWrapper.append(`
                 <div class="img img-add">
@@ -164,23 +149,23 @@ import "../css/style.scss";
         url: this.api.UPLOAD,
         width: '750',
         type: 'video',
-        showTost: this.showTost,
+        showToast: this.showToast,
         quality: '0.8',
         corpId: self.corpId,
         videoSize: 1024 * 1024 * 50,
         videoType: 'video/ogg,video/mp4,video/WebM,video/quicktime,video/x-msvideo',
         sendBefore: () => {
-          this.showTost('正在上传文件...');
+          this.showToast('正在上传文件...');
         },
         success: (res) => {
           if (res.ret === 0) {
-            this.showTost('上传成功');
+            this.showToast('上传成功');
             setTimeout(() => {
               this.page('home');
             }, 500);
             this.currentList = 'home';
           } else {
-            this.showTost(res.msg || '上传失败稍后重试');
+            this.showToast(res.msg || '上传失败稍后重试');
           }
         },
         error(res) {
@@ -189,28 +174,27 @@ import "../css/style.scss";
       });
     }
 
-    // 上传确认页面事件
+    // 上传页面 各种点击事件
     uploadPageEvents() {
       const self = this;
       const $uploadPreview = $('.upload-preview');
       // 确认上传
       $uploadPreview.find('.upload-ok').click(() => {
-
         const options =  {
           url: this.api.UPLOAD,
           corpId: self.corpId,
           type: 'img',
-          showTost: this.showTost,
+          showToast: this.showToast,
           sendBefore: (file, config) => {
             $('body').append(`
-            <div class="is-img-uploading">
-              <i class="iconfont icon-loading" style="color: rgba(0, 0, 0, .85); z-index: 320"></i>
-              <p>图片上传中</p>
-            </div>`
-              );
+              <div class="is-img-uploading">
+                <i class="iconfont icon-loading" style="color: #fff; z-index: 320"></i>
+                <p>图片上传中</p>
+              </div>`
+            );
           },
           success: (res, config) => {
-            self.page('home');
+            self.page('home'); // 跳转
             $uploadPreview.hide().find('.select-img').empty();
             win.canUploadLength = 9;
             self.currentImages = [];
@@ -219,9 +203,11 @@ import "../css/style.scss";
           },
           error(res) {
             $('.is-img-uploading').remove();
-            this.showTost(res.msg || '上传出现错误');
+            this.showToast(res.msg || '上传出现错误');
           }
         }
+
+        // 循环上传所添加的图片
         self.currentImages.forEach((item, index) => {
           uploadFn(item.file, options, { all: self.currentImages.length, cur: index});
         });
@@ -278,6 +264,7 @@ import "../css/style.scss";
         isResizable: true,
       });
     }
+
     // 切换页面
     page(active, cb) {
       const $activePage = $("#page-" + active);
@@ -285,11 +272,12 @@ import "../css/style.scss";
       $activePage.find('.preview').html('');
       this.getList({
         page: 1,
-        count: active === 'home' ? 20 : 10,
+        count: active === 'home' ? 10 : 10,
         patten: active === 'home' ? 1 : 2
       }, active, cb && cb);
     }
-    // 显示和隐藏提示
+
+    // 显示和隐藏活动介绍信息
     showTip() {
       const $tips = $('#page-rules');
       $('.btn-rules').on('tap', e => {
@@ -305,6 +293,8 @@ import "../css/style.scss";
         });
       });
     }
+
+    // 获取资源列表
     getList (ops, page, callback) {
       const url = this.api.LIST;
       const self = this;
@@ -319,13 +309,27 @@ import "../css/style.scss";
         if (res.ret === 0) {
           const data = res.data.dataList;
           // const data = [];
-          if (data.length < 20) {
+          if (data.length < 10) {
             this.hasMore = false;
           };
-          self.hasMore = data.length === 20;
+          self.hasMore = data.length === 10;
           const template = data.map(list => {
+
+
+            // const width = /width=([0-9]*)/.exec(list.path);
+            // let height = /height=([0-9]*)/.exec(list.path);
+            // height = height['1'] / (width['1'] / 335);
+            // console.log(height);
+            
+            
             if (list.mediaType === 1) {
-              return `<div class="item masonry-brick" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
+              const width = /width=([0-9]*)/.exec(list.path);
+              let height = /height=([0-9]*)/.exec(list.path);
+              if (height && width) {
+                height = height[1] / (width[1] / 335) + 3;
+                height = height < 100 ? 100 : height;
+              }
+              return `<div class="item masonry-brick" style="height: ${height ? height : 'auto'}px" data-id="${list.id}" data-src="${list.path}" data-love="${list.isVoted === 0 ? 1 : 2}">
                 <img src="${list.path}">
                 <div class="pick-info">
                   <i class="type iconfont icon-tupianx"></i>
@@ -366,12 +370,12 @@ import "../css/style.scss";
             $('#masonry').masonry('reload');
           }, 100);
         } else {
-          self.showTost(res && res.msg || '网络错误，请稍后重试');
+          self.showToast(res && res.msg || '网络错误，请稍后重试');
         }
       });
     }
 
-    // 点击查看大图
+    // 点击查看大图 或播放视频
     previewPic() {
       const self = this;
       $('.preview').on('tap', ':not(".btnLike")', (e) => {
@@ -385,7 +389,7 @@ import "../css/style.scss";
         if ($Item.hasClass('video')){
           const videoPath = $Item.attr('data-videoPath');
           const imgPath = $Item.attr('videoPath');
-          self.playVidoeIOS(videoPath, $Item.data('id'));
+          self.playVidoe(videoPath, $Item.data('id'));
           
           return false;
         }
@@ -398,6 +402,8 @@ import "../css/style.scss";
           }
           return url;
         });
+
+        // 微信预览
         if (typeof wx !== 'undefined') {
           wx.previewImage({
             current: $Item.data('src') || $Item.attr('src'),
@@ -408,6 +414,7 @@ import "../css/style.scss";
       });
     }
 
+    // 微信jssdk
     wxJssdk() {
       const self = this;
       const api = self.api.WX_CONFIG;
@@ -491,13 +498,13 @@ import "../css/style.scss";
             _this.find('.btnLike i').addClass('icon-dianzanedx').removeClass('icon-dianzanx');
             _this.removeAttr('love');
             _this.attr('data-love', 2);
-            self.showTost('已点赞');
+            self.showToast('已点赞');
           } else {
             _this.find('.btnLike b').text(parseInt(_this.find('b').text()) - 1);
             _this.find('.btnLike i').removeClass('icon-dianzanedx').addClass('icon-dianzanx');
             _this.removeAttr('love');
             _this.attr('data-love', 1);
-            self.showTost('已取消点赞');
+            self.showToast('已取消点赞');
           }
 
           // 刷新列表
@@ -505,7 +512,7 @@ import "../css/style.scss";
             self.page('rank');
           }
         } else {
-          self.showTost(res && res.msg || '网络错误请稍后重试');
+          self.showToast(res && res.msg || '网络错误请稍后重试');
         }
         setTimeout(function () {
           _this.removeClass('disabled');
@@ -514,8 +521,8 @@ import "../css/style.scss";
       });
     }
 
-    // paly
-    playVidoeIOS(video, id, callback) {
+    // 视频播放控制
+    playVidoe(video, id, callback) {
       const $videoContainer = $('.videoContainer');
       const $video = $videoContainer.find('video');
       $video.attr('src', video);
@@ -614,6 +621,7 @@ import "../css/style.scss";
       });
     }
 
+    // 列表滚动加载更多
     scrollLoadMore () {
       const self = this;
       $('#page-home').on('scroll', function () {
@@ -622,12 +630,12 @@ import "../css/style.scss";
         const scrollH = $target.scrollTop();
         const distance = contentH - scrollH;
         let currentPage = self.currentPage;
-        if (distance < 1800 && !self.loading && self.hasMore) {
+        if (distance < 1200 && !self.loading && self.hasMore) {
           currentPage += 1;
           self.currentPage = currentPage;
           self.getList({
             page: currentPage,
-            count: 20,
+            count: 10,
             patten: 1
           }, 'home');
         }
@@ -635,7 +643,9 @@ import "../css/style.scss";
 
     }
 
-    showTost (text) {
+
+    // Toast 提示
+    showToast (text) {
       const $hint = $('#hint');
       $hint.text(text).show();
       setTimeout(() => {
@@ -648,6 +658,7 @@ import "../css/style.scss";
       }, 1400);
     }
 
+    // banner 目前只有一张
     renderBanner () {
       const self = this;
       const bannerList = [
@@ -656,8 +667,6 @@ import "../css/style.scss";
           id: 1
         },
       ];
-
-      
 
       const sliders = bannerList.map(slide => {
         return `<li id="${slide.id}" class="slider-item openParam" data-param="">
@@ -674,7 +683,7 @@ import "../css/style.scss";
       });
     }
 
-    // 视频类型确认
+    // 上传类型确认
     handleConfirm () {
       const $mask = $('.confirm-mask');
       const $container = $mask.find('.mask-contaner');

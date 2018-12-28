@@ -39,7 +39,7 @@ $.fn.UploadImg = function (o) {
     const mediaName = file.name;
     const flag = patt.test(mediaName);
     if (!flag && size >= o.videoSize) {
-      o.showTips.error(`视频不能超出40M`);
+      o.showTips.error(`视频不能超出50M`);
       this.value = '';
       return;
     } else if (!flag && o.videoType.indexOf(file.type) < 0) {
