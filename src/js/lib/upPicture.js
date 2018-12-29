@@ -11,9 +11,9 @@ $.fn.UploadImg = function (o) {
         o.showTips.error('每次最多上传9个文件');
         fileArr = fileArr.slice(0, 9);
       }
-      (function () {
+      // (function () {
         
-      })()
+      // })()
       fileArr.forEach(function (cur)  {
 
         (function (file, o, params, config) {

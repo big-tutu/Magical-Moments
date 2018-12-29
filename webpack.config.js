@@ -128,7 +128,7 @@ module.exports = {
   devServer: {
     contentBase: './dist',
     // host: '192.168.1.100',
-    host: '192.168.123.70',
+    host: '192.168.121.134',
     port: 2000,
     hot: true,
     proxy: {

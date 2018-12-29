@@ -24,6 +24,9 @@ import "../css/style.scss";
         BANNER_DATA: '/api/banner/data'
       };
       this.init();
+      
+      // 开发使用
+      this.main()
     }
     init() {
 
